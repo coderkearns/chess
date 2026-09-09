@@ -1,7 +1,9 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a single chess piece
@@ -53,7 +55,25 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+
+        // TODO continune
+        if (this.pieceType == PieceType.KING) {
+
+        }
+
+        if (this.pieceType == PieceType.ROOK || this.pieceType == PieceType.QUEEN) {
+
+        }
+
         throw new RuntimeException("Not implemented");
+    }
+
+    private void addMoveHelper(int deltaRow, int deltaCol, bool allowCapturing, ChessBoard board, ChessPosition myPosition, Set<ChessMove> possibleMoves) {
+        ChessPosition newPosition = new ChessPosition(myPosition.getRow() + deltaRow, myPosition.getColumn() + deltaCol);
+        if (newPosition.getRow() < 1 || newPosition.getRow() > 8) return;
+        if (newPosition.getColumn() < 1 || newPosition.getColumn() > 8) return;
+        // TODO continue
     }
 
     @Override
