@@ -40,6 +40,10 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        for (ChessPiece[] row : board) {
+            for (int i = 0; i < 8; i++) {
+                row[i] = null;
+            }
+        }
     }
 }
