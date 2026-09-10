@@ -79,6 +79,11 @@ public class ChessPiece {
     private void addMoveHelper(int deltaRow, int deltaCol, boolean allowCapturing, ChessPiece.PieceType promotionPiece, ChessBoard board, ChessPosition myPosition, Set<ChessMove> possibleMoves) {
         ChessPosition newPosition = new ChessPosition(myPosition.getRow() + deltaRow, myPosition.getColumn() + deltaCol);
 
+        // Don't allow the current space
+        if (newPosition.getRow() == myPosition.getRow() && newPosition.getColumn() == myPosition.getColumn()) {
+            return;
+        }
+
         // Don't allow out-of-bounds moves
         if (newPosition.getRow() < 1 || newPosition.getRow() > 8) {
             return;
