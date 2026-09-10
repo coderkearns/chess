@@ -59,14 +59,14 @@ public class ChessPiece {
 
         // TODO continune
         if (this.pieceType == PieceType.KING) {
-            addMoveHelper(1, -1, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(1, 0, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(1, 1, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(0, -1, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(0, 1, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(-1, -1, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(-1, 0, true, pieceType, board, myPosition, possibleMoves);
-            addMoveHelper(-1, 1, true, pieceType, board, myPosition, possibleMoves);
+            addMoveHelper(1, -1, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(1, 0, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(1, 1, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(0, -1, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(0, 1, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(-1, -1, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(-1, 0, true, null, board, myPosition, possibleMoves);
+            addMoveHelper(-1, 1, true, null, board, myPosition, possibleMoves);
         }
 
         if (this.pieceType == PieceType.ROOK || this.pieceType == PieceType.QUEEN) {
@@ -80,14 +80,22 @@ public class ChessPiece {
         ChessPosition newPosition = new ChessPosition(myPosition.getRow() + deltaRow, myPosition.getColumn() + deltaCol);
 
         // Don't allow out-of-bounds moves
-        if (newPosition.getRow() < 1 || newPosition.getRow() > 8) return;
-        if (newPosition.getColumn() < 1 || newPosition.getColumn() > 8) return;
+        if (newPosition.getRow() < 1 || newPosition.getRow() > 8) {
+            return;
+        }
+        if (newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+            return;
+        }
 
         // Don't allow capturing own pieces or standing on non-capturable pieces
         var targetedPiece = board.getPiece(newPosition);
         if (targetedPiece != null) {
-            if (targetedPiece.teamColor == this.teamColor) return;
-            if (!allowCapturing) return;
+            if (targetedPiece.teamColor == this.teamColor) {
+                return;
+            }
+            if (!allowCapturing) {
+                return;
+            }
         }
 
         // TODO if a piece is in the way to this move, block it too.
