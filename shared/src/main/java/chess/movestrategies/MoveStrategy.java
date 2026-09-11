@@ -23,8 +23,9 @@ public class MoveStrategy {
         throw new RuntimeException("Not implemented");
     };
 
-    protected boolean isValidMoveNormally(int row, int col) {
-        ChessPosition newPosition = new ChessPosition(row, col);
+    protected boolean isValidMoveNormally(ChessPosition newPosition) {
+        int row = newPosition.getRow();
+        int col = newPosition.getColumn();
 
         // Don't allow the current space
         if (row == myPosition.getRow() && col == myPosition.getColumn())

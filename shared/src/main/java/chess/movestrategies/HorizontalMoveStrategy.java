@@ -16,9 +16,49 @@ public class HorizontalMoveStrategy extends MoveStrategy {
     public void addMoves(Set<ChessMove> possibleMoves) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        // Horizontal left
-        // Horizontal right
+
         // Vertical up
+        for (int i = col + 1; i < 9; i++) {
+            ChessPosition newPosition = new ChessPosition(row, i);
+            if (isValidMoveNormally(newPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+            }
+            // Stop when we hit a piece
+            if (board.getPiece(newPosition) != null)
+                break;
+        }
+
         // Vertical down
+        for (int i = col - 1; i > 0; i--) {
+            ChessPosition newPosition = new ChessPosition(row, i);
+            if (isValidMoveNormally(newPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+            }
+            // Stop when we hit a piece
+            if (board.getPiece(newPosition) != null)
+                break;
+        }
+
+        // Horizontal right
+        for (int i = row + 1; i < 9; i++) {
+            ChessPosition newPosition = new ChessPosition(i, col);
+            if (isValidMoveNormally(newPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+            }
+            // Stop when we hit a piece
+            if (board.getPiece(newPosition) != null)
+                break;
+        }
+
+        // Horizontal left
+        for (int i = row - 1; i > 0; i--) {
+            ChessPosition newPosition = new ChessPosition(i, col);
+            if (isValidMoveNormally(newPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+            }
+            // Stop when we hit a piece
+            if (board.getPiece(newPosition) != null)
+                break;
+        }
     }
 }
