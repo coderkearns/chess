@@ -8,7 +8,7 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 
 public class HorizontalMoveStrategy extends MoveStrategy {
-    HorizontalMoveStrategy(ChessBoard board, ChessPosition myPosition, ChessPiece myPiece) {
+    public HorizontalMoveStrategy(ChessBoard board, ChessPosition myPosition, ChessPiece myPiece) {
         super(board, myPosition, myPiece);
     }
 

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import chess.movestrategies.HorizontalMoveStrategy;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -58,54 +60,11 @@ public class ChessPiece {
         Set<ChessMove> possibleMoves = new HashSet<>();
 
         // TODO continune
-        if (this.pieceType == PieceType.KING) {
-            addMoveHelper(1, -1, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(1, 0, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(1, 1, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(0, -1, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(0, 1, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(-1, -1, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(-1, 0, true, null, board, myPosition, possibleMoves);
-            addMoveHelper(-1, 1, true, null, board, myPosition, possibleMoves);
-        }
-
         if (this.pieceType == PieceType.ROOK || this.pieceType == PieceType.QUEEN) {
-
+            new HorizontalMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
         }
 
         return possibleMoves;
-    }
-
-    private void addMoveHelper(int deltaRow, int deltaCol, boolean allowCapturing, ChessPiece.PieceType promotionPiece, ChessBoard board, ChessPosition myPosition, Set<ChessMove> possibleMoves) {
-        ChessPosition newPosition = new ChessPosition(myPosition.getRow() + deltaRow, myPosition.getColumn() + deltaCol);
-
-        // Don't allow the current space
-        if (newPosition.getRow() == myPosition.getRow() && newPosition.getColumn() == myPosition.getColumn()) {
-            return;
-        }
-
-        // Don't allow out-of-bounds moves
-        if (newPosition.getRow() < 1 || newPosition.getRow() > 8) {
-            return;
-        }
-        if (newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
-            return;
-        }
-
-        // Don't allow capturing own pieces or standing on non-capturable pieces
-        var targetedPiece = board.getPiece(newPosition);
-        if (targetedPiece != null) {
-            if (targetedPiece.teamColor == this.teamColor) {
-                return;
-            }
-            if (!allowCapturing) {
-                return;
-            }
-        }
-
-        // TODO if a piece is in the way to this move, block it too.
-
-        possibleMoves.add(new ChessMove(myPosition, newPosition, promotionPiece));
     }
 
     @Override
