@@ -14,7 +14,7 @@ public class ChessBoard {
     private ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -35,6 +35,9 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
+        if (position.getRow() < 1 || position.getRow() > 8 || position.getColumn() > 8 || position.getColumn() < 1) {
+            return null;
+        }
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 

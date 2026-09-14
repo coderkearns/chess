@@ -20,42 +20,30 @@ public class DiagonalMoveStrategy extends MoveStrategy {
         int col = myPosition.getColumn();
 
         // Up-right
-        for (int i = 0; i < 9; i++) {
-            ChessPosition newPosition = new ChessPosition(row + i, col + i);
-            if (isValidMoveNormally(newPosition)) {
-                if (addPosition(newPosition, possibleMoves)) {
-                    break;
-                }
+        for (int i = 1; i < 9; i++) {
+            if (addPosition(row + i, col + i, possibleMoves)) {
+                break;
             }
         }
 
         // Up-left
-        for (int i = 0; i < 9; i++) {
-            ChessPosition newPosition = new ChessPosition(row + i, col - i);
-            if (isValidMoveNormally(newPosition)) {
-                if (addPosition(newPosition, possibleMoves)) {
-                    break;
-                }
+        for (int i = 1; i < 9; i++) {
+            if (addPosition(row + i, col - i, possibleMoves)) {
+                break;
             }
         }
 
         // Down-right
-        for (int i = 0; i < 9; i++) {
-            ChessPosition newPosition = new ChessPosition(row - i, col + i);
-            if (isValidMoveNormally(newPosition)) {
-                if (addPosition(newPosition, possibleMoves)) {
-                    break;
-                }
+        for (int i = 1; i < 9; i++) {
+            if (addPosition(row - i, col + i, possibleMoves)) {
+                break;
             }
         }
 
         // Down-left
-        for (int i = 0; i < 9; i++) {
-            ChessPosition newPosition = new ChessPosition(row - i, col - i);
-            if (isValidMoveNormally(newPosition)) {
-                if (addPosition(newPosition, possibleMoves)) {
-                    break;
-                }
+        for (int i = 1; i < 9; i++) {
+            if (addPosition(row - i, col - i, possibleMoves)) {
+                break;
             }
         }
     }

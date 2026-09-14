@@ -23,8 +23,6 @@ public class MoveStrategy {
         throw new RuntimeException("Not implemented");
     }
 
-    ;
-
     protected boolean isValidMoveNormally(ChessPosition newPosition) {
         int row = newPosition.getRow();
         int col = newPosition.getColumn();
@@ -48,11 +46,13 @@ public class MoveStrategy {
     }
 
     /**
-     * Adds a position move to a move set. Returns true if the position hit a piece and should stop iterating.
+     * Adds a position if it's valid. Returns `true` if iterating in a direction should break.
      */
-    protected boolean addPosition(ChessPosition newPosition,
-                                  Set<ChessMove> possibleMoves) {
-        possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+    protected boolean addPosition(int row, int col, Set<ChessMove> possibleMoves) {
+        ChessPosition newPosition = new ChessPosition(row, col);
+        if (isValidMoveNormally(newPosition)) {
+            possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+        }
         return board.getPiece(newPosition) != null;
     }
 }
