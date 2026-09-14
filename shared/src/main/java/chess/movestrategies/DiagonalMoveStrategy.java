@@ -21,57 +21,29 @@ public class DiagonalMoveStrategy extends MoveStrategy {
     // Up-right
     for (int i = 0; i < 9; i++) {
       ChessPosition newPosition = new ChessPosition(row + i, col + i);
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-      } else {
+      if (!addPositionIfValid(newPosition))
         break;
-      }
     }
 
     // Up-left
+    for (int i = 0; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(row + i, col - i);
+      if (!addPositionIfValid(newPosition))
+        break;
+    }
 
     // Down-right
+    for (int i = 0; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(row - i, col + i);
+      if (!addPositionIfValid(newPosition))
+        break;
+    }
 
     // Down-left
-
-    // Vertical up
-    for (int i = col + 1; i < 9; i++) {
-      ChessPosition newPosition = new ChessPosition(row, i);
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-      } else {
+    for (int i = 0; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(row - i, col - i);
+      if (!addPositionIfValid(newPosition))
         break;
-      }
-    }
-
-    // Vertical down
-    for (int i = col - 1; i > 0; i--) {
-      ChessPosition newPosition = new ChessPosition(row, i);
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-      } else {
-        break;
-      }
-    }
-
-    // Horizontal right
-    for (int i = row + 1; i < 9; i++) {
-      ChessPosition newPosition = new ChessPosition(i, col);
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-      } else {
-        break;
-      }
-    }
-
-    // Horizontal left
-    for (int i = row - 1; i > 0; i--) {
-      ChessPosition newPosition = new ChessPosition(i, col);
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-      } else {
-        break;
-      }
     }
   }
 }
