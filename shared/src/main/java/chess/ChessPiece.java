@@ -64,6 +64,12 @@ public class ChessPiece {
             new HorizontalMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
         }
 
+        if (this.pieceType == PieceType.BISHOP ||
+            this.pieceType == PieceType.QUEEN) {
+          new DiagonalMoveStrategy(board, myPosition, this)
+              .addMoves(possibleMoves);
+        }
+
         return possibleMoves;
     }
 
