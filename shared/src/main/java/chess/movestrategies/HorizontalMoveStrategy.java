@@ -14,6 +14,7 @@ public class HorizontalMoveStrategy extends MoveStrategy {
 
     @Override
     public void addMoves(Set<ChessMove> possibleMoves) {
+        // For each direction, keep moving forward until an invalid spot is found.
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 
@@ -22,10 +23,9 @@ public class HorizontalMoveStrategy extends MoveStrategy {
             ChessPosition newPosition = new ChessPosition(row, i);
             if (isValidMoveNormally(newPosition)) {
                 possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-            }
-            // Stop when we hit a piece
-            if (board.getPiece(newPosition) != null)
+            } else {
                 break;
+            }
         }
 
         // Vertical down
@@ -33,10 +33,9 @@ public class HorizontalMoveStrategy extends MoveStrategy {
             ChessPosition newPosition = new ChessPosition(row, i);
             if (isValidMoveNormally(newPosition)) {
                 possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-            }
-            // Stop when we hit a piece
-            if (board.getPiece(newPosition) != null)
+            } else {
                 break;
+            }
         }
 
         // Horizontal right
@@ -44,10 +43,9 @@ public class HorizontalMoveStrategy extends MoveStrategy {
             ChessPosition newPosition = new ChessPosition(i, col);
             if (isValidMoveNormally(newPosition)) {
                 possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-            }
-            // Stop when we hit a piece
-            if (board.getPiece(newPosition) != null)
+            } else {
                 break;
+            }
         }
 
         // Horizontal left
@@ -55,10 +53,9 @@ public class HorizontalMoveStrategy extends MoveStrategy {
             ChessPosition newPosition = new ChessPosition(i, col);
             if (isValidMoveNormally(newPosition)) {
                 possibleMoves.add(new ChessMove(myPosition, myPosition, null));
-            }
-            // Stop when we hit a piece
-            if (board.getPiece(newPosition) != null)
+            } else {
                 break;
+            }
         }
     }
 }
