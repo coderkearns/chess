@@ -1,0 +1,77 @@
+package chess.movestrategies;
+
+import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
+import java.util.Set;
+
+public class DiagonalMoveStrategy extends MoveStrategy {
+  public DiagonalMoveStrategy(ChessBoard board, ChessPosition myPosition,
+                              ChessPiece myPiece) {
+    super(board, myPosition, myPiece);
+  }
+
+  @Override
+  public void addMoves(Set<ChessMove> possibleMoves) {
+    // For each direction, keep moving forward until an invalid spot is found.
+    int row = myPosition.getRow();
+    int col = myPosition.getColumn();
+
+    // Up-right
+    for (int i = 0; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(row + i, col + i);
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+      } else {
+        break;
+      }
+    }
+
+    // Up-left
+
+    // Down-right
+
+    // Down-left
+
+    // Vertical up
+    for (int i = col + 1; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(row, i);
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+      } else {
+        break;
+      }
+    }
+
+    // Vertical down
+    for (int i = col - 1; i > 0; i--) {
+      ChessPosition newPosition = new ChessPosition(row, i);
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+      } else {
+        break;
+      }
+    }
+
+    // Horizontal right
+    for (int i = row + 1; i < 9; i++) {
+      ChessPosition newPosition = new ChessPosition(i, col);
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+      } else {
+        break;
+      }
+    }
+
+    // Horizontal left
+    for (int i = row - 1; i > 0; i--) {
+      ChessPosition newPosition = new ChessPosition(i, col);
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, myPosition, null));
+      } else {
+        break;
+      }
+    }
+  }
+}

@@ -41,4 +41,14 @@ public class MoveStrategy {
 
         return true;
     }
+
+    /** Adds a position move to a move set if the move is valid. Returns true if it was valid, false otherwise. Assumes promotion piece is null. */
+    protected boolean addPositionIfValid(ChessPosition newPosition,
+                                       Set<ChessMove> possibleMoves) {
+      if (isValidMoveNormally(newPosition)) {
+        possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+        return true;
+      }
+      return false;
+    }
 }
