@@ -44,21 +44,15 @@ public class MoveStrategy {
             return false;
         }
 
-        // TODO found the problem. It passed fine on opposite pieces and doesn't flag that it should stop iterating.
-
         return true;
     }
 
     /**
-     * Adds a position move to a move set if the move is valid. Returns true if it was valid, false otherwise. Assumes promotion piece is null.
+     * Adds a position move to a move set. Returns true if the position hit a piece and should stop iterating.
      */
-    protected boolean addPositionIfValid(ChessPosition newPosition,
-                                         Set<ChessMove> possibleMoves) {
-        System.out.println(newPosition);
-        if (isValidMoveNormally(newPosition)) {
-            possibleMoves.add(new ChessMove(myPosition, newPosition, null));
-            return true;
-        }
-        return false;
+    protected boolean addPosition(ChessPosition newPosition,
+                                  Set<ChessMove> possibleMoves) {
+        possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+        return board.getPiece(newPosition) != null;
     }
 }

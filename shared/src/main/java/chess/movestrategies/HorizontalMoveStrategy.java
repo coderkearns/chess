@@ -21,32 +21,40 @@ public class HorizontalMoveStrategy extends MoveStrategy {
         // Vertical up
         for (int i = row + 1; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(i, col);
-            if (!addPositionIfValid(newPosition, possibleMoves)) {
-                break;
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
             }
         }
 
         // Vertical down
         for (int i = row - 1; i > 0; i--) {
             ChessPosition newPosition = new ChessPosition(i, col);
-            if (!addPositionIfValid(newPosition, possibleMoves)) {
-                break;
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
             }
         }
 
         // Horizontal right
         for (int i = col + 1; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(row, i);
-            if (!addPositionIfValid(newPosition, possibleMoves)) {
-                break;
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
             }
         }
 
         // Horizontal left
         for (int i = col - 1; i > 0; i--) {
             ChessPosition newPosition = new ChessPosition(row, i);
-            if (!addPositionIfValid(newPosition, possibleMoves)) {
-                break;
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
             }
         }
     }

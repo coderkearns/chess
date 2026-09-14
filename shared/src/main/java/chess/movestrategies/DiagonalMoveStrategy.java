@@ -22,33 +22,41 @@ public class DiagonalMoveStrategy extends MoveStrategy {
         // Up-right
         for (int i = 0; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(row + i, col + i);
-          if (!addPositionIfValid(newPosition, possibleMoves)) {
-            break;
-          }
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
+            }
         }
 
         // Up-left
         for (int i = 0; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(row + i, col - i);
-          if (!addPositionIfValid(newPosition, possibleMoves)) {
-            break;
-          }
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
+            }
         }
 
         // Down-right
         for (int i = 0; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(row - i, col + i);
-          if (!addPositionIfValid(newPosition, possibleMoves)) {
-            break;
-          }
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
+            }
         }
 
         // Down-left
         for (int i = 0; i < 9; i++) {
             ChessPosition newPosition = new ChessPosition(row - i, col - i);
-          if (!addPositionIfValid(newPosition, possibleMoves)) {
-            break;
-          }
+            if (isValidMoveNormally(newPosition)) {
+                if (addPosition(newPosition, possibleMoves)) {
+                    break;
+                }
+            }
         }
     }
 }
