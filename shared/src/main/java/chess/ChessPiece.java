@@ -2,6 +2,7 @@ package chess;
 
 import chess.movestrategies.DiagonalMoveStrategy;
 import chess.movestrategies.HorizontalMoveStrategy;
+import chess.movestrategies.KnightMoveStrategy;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,6 +70,10 @@ public class ChessPiece {
                 this.pieceType == PieceType.QUEEN) {
             new DiagonalMoveStrategy(board, myPosition, this)
                     .addMoves(possibleMoves);
+        }
+
+        if (this.pieceType == PieceType.KNIGHT) {
+            new KnightMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
         }
 
         return possibleMoves;
