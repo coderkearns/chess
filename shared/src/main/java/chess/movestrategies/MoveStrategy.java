@@ -1,11 +1,11 @@
 package chess.movestrategies;
 
-import java.util.Set;
-
 import chess.ChessBoard;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+
+import java.util.Set;
 
 public class MoveStrategy {
 
@@ -21,34 +21,44 @@ public class MoveStrategy {
 
     public void addMoves(Set<ChessMove> possibleMoves) {
         throw new RuntimeException("Not implemented");
-    };
+    }
+
+    ;
 
     protected boolean isValidMoveNormally(ChessPosition newPosition) {
         int row = newPosition.getRow();
         int col = newPosition.getColumn();
 
         // Don't allow the current space
-        if (row == myPosition.getRow() && col == myPosition.getColumn())
+        if (row == myPosition.getRow() && col == myPosition.getColumn()) {
             return false;
+        }
         // Don't allow moving out of bounds
-        if (row < 1 || row > 8 || col < 1 || col > 8)
+        if (row < 1 || row > 8 || col < 1 || col > 8) {
             return false;
+        }
 
         // Don't allow capturing own pieces
         var targetedPiece = board.getPiece(newPosition);
-        if (targetedPiece != null && targetedPiece.getTeamColor() == myPiece.getTeamColor())
+        if (targetedPiece != null && targetedPiece.getTeamColor() == myPiece.getTeamColor()) {
             return false;
+        }
+
+        // TODO found the problem. It passed fine on opposite pieces and doesn't flag that it should stop iterating.
 
         return true;
     }
 
-    /** Adds a position move to a move set if the move is valid. Returns true if it was valid, false otherwise. Assumes promotion piece is null. */
+    /**
+     * Adds a position move to a move set if the move is valid. Returns true if it was valid, false otherwise. Assumes promotion piece is null.
+     */
     protected boolean addPositionIfValid(ChessPosition newPosition,
-                                       Set<ChessMove> possibleMoves) {
-      if (isValidMoveNormally(newPosition)) {
-        possibleMoves.add(new ChessMove(myPosition, newPosition, null));
-        return true;
-      }
-      return false;
+                                         Set<ChessMove> possibleMoves) {
+        System.out.println(newPosition);
+        if (isValidMoveNormally(newPosition)) {
+            possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+            return true;
+        }
+        return false;
     }
 }
