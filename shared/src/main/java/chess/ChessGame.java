@@ -54,6 +54,10 @@ public class ChessGame {
         return piece == null ? null : piece.pieceMoves(board, startPosition);
     }
 
+    private void toggleTeamTurn() {
+        teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
     /**
      * Makes a move in the chess game
      *
@@ -61,7 +65,28 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+
+        if (piece == null) {
+            throw new InvalidMoveException("No piece to move");
+        }
+
+        if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("It's not their turn");
+        }
+
+        Collection<ChessMove> validMoves = piece.pieceMoves(board, move.getStartPosition());
+
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Invalid move");
+        }
+
+        ChessPiece.PieceType promotion = move.getPromotionPiece();
+        piece = promotion == null ? piece : new ChessPiece(piece.getTeamColor(), promotion);
+        board.addPiece(move.getEndPosition(), piece);
+        board.addPiece(move.getStartPosition(), null);
+
+        toggleTeamTurn();
     }
 
     /**
