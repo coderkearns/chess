@@ -7,52 +7,57 @@ import chess.ChessPosition;
 
 import java.util.Set;
 
-public class MoveStrategy {
+public abstract class MoveStrategy {
+    final ChessBoard board;
+    final ChessPosition myPosition;
+    final ChessPiece piece;
 
-    public final ChessBoard board;
-    public final ChessPosition myPosition;
-    public final ChessPiece myPiece;
-
-    public MoveStrategy(ChessBoard board, ChessPosition myPosition, ChessPiece myPiece) {
+    public MoveStrategy(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         this.board = board;
         this.myPosition = myPosition;
-        this.myPiece = myPiece;
+        this.piece = piece;
     }
 
-    public void addMoves(Set<ChessMove> possibleMoves) {
-        throw new RuntimeException("Not implemented");
+    public abstract void addMoves(Set<ChessMove> moves);
+
+    protected boolean isPositionValid(ChessPosition newPosition) {
+        return board.isValid(newPosition) && newPosition != myPosition;
     }
 
-    protected boolean isValidMoveNormally(ChessPosition newPosition) {
-        int row = newPosition.getRow();
-        int col = newPosition.getColumn();
-
-        // Don't allow the current space
-        if (row == myPosition.getRow() && col == myPosition.getColumn()) {
+    protected boolean isPositionFree(ChessPosition newPosition, boolean allowEnemy) {
+        ChessPiece targetPiece = board.getPiece(newPosition);
+        if (targetPiece == null) {
+            return true;
+        } else if (targetPiece.getTeamColor() == piece.getTeamColor()) {
             return false;
+        } else {
+            return allowEnemy;
         }
-        // Don't allow moving out of bounds
-        if (row < 1 || row > 8 || col < 1 || col > 8) {
-            return false;
-        }
-
-        // Don't allow capturing own pieces
-        var targetedPiece = board.getPiece(newPosition);
-        if (targetedPiece != null && targetedPiece.getTeamColor() == myPiece.getTeamColor()) {
-            return false;
-        }
-
-        return true;
     }
 
-    /**
-     * Adds a position if it's valid. Returns `true` if iterating in a direction should break.
-     */
-    protected boolean addPosition(int row, int col, Set<ChessMove> possibleMoves) {
-        ChessPosition newPosition = new ChessPosition(row, col);
-        if (isValidMoveNormally(newPosition)) {
-            possibleMoves.add(new ChessMove(myPosition, newPosition, null));
+    protected boolean isPositionFree(ChessPosition newPosition) {
+        return isPositionFree(newPosition, true);
+    }
+
+    protected void addMovesInLine(int[] lineDelta, Set<ChessMove> moves) {
+        for (int i = 1; true; i++) {
+            ChessPosition newPosition = myPosition.delta(lineDelta[0] * i, lineDelta[1] * i);
+            if (isPositionValid(newPosition) && isPositionFree(newPosition)) {
+                moves.add(new ChessMove(myPosition, newPosition, null));
+            }
+
+            if (!isPositionValid(newPosition) || board.getPiece(newPosition) != null) {
+                break;
+            }
         }
-        return board.getPiece(newPosition) != null;
+    }
+
+    protected void addStaticMoves(int[][] staticDeltas, Set<ChessMove> moves) {
+        for (var delta : staticDeltas) {
+            ChessPosition newPosition = myPosition.delta(delta[0], delta[1]);
+            if (isPositionValid(newPosition) && isPositionFree(newPosition)) {
+                moves.add(new ChessMove(myPosition, newPosition, null));
+            }
+        }
     }
 }

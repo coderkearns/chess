@@ -5,7 +5,6 @@ import chess.movestrategies.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Represents a single chess piece
@@ -57,32 +56,24 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Set<ChessMove> possibleMoves = new HashSet<>();
+        var moves = new HashSet<ChessMove>();
 
-        // TODO continune
-        if (this.pieceType == PieceType.ROOK || this.pieceType == PieceType.QUEEN) {
-            new HorizontalMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
+        switch (pieceType) {
+            case ROOK -> new RookMoveStrategy(board, myPosition, this).addMoves(moves);
+            case BISHOP -> new BishopMoveStrategy(board, myPosition, this).addMoves(moves);
+            case QUEEN -> {
+                new RookMoveStrategy(board, myPosition, this).addMoves(moves);
+                new BishopMoveStrategy(board, myPosition, this).addMoves(moves);
+            }
+            case KING -> new KingMoveStrategy(board, myPosition, this).addMoves(moves);
+            case KNIGHT -> new KnightMoveStrategy(board, myPosition, this).addMoves(moves);
+            case PAWN -> new PawnMoveStrategy(board, myPosition, this).addMoves(moves);
+            default -> {
+            }
         }
+        ;
 
-        if (this.pieceType == PieceType.BISHOP ||
-                this.pieceType == PieceType.QUEEN) {
-            new DiagonalMoveStrategy(board, myPosition, this)
-                    .addMoves(possibleMoves);
-        }
-
-        if (this.pieceType == PieceType.KNIGHT) {
-            new KnightMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
-        }
-
-        if (this.pieceType == PieceType.KING) {
-            new KingMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
-        }
-
-        if (this.pieceType == PieceType.PAWN) {
-            new PawnMoveStrategy(board, myPosition, this).addMoves(possibleMoves);
-        }
-
-        return possibleMoves;
+        return moves;
     }
 
     @Override
@@ -102,8 +93,8 @@ public class ChessPiece {
     @Override
     public String toString() {
         return "ChessPiece{" +
-                teamColor +
-                " " + pieceType +
+                "teamColor=" + teamColor +
+                ", pieceType=" + pieceType +
                 '}';
     }
 }

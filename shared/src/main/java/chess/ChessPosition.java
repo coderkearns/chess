@@ -23,7 +23,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return this.row;
+        return row;
     }
 
     /**
@@ -31,7 +31,11 @@ public class ChessPosition {
      * 1 codes for the left column
      */
     public int getColumn() {
-        return this.col;
+        return col;
+    }
+
+    public ChessPosition delta(int rowDelta, int colDelta) {
+        return new ChessPosition(row + rowDelta, col + colDelta);
     }
 
     @Override

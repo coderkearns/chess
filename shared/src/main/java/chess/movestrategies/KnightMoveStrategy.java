@@ -7,16 +7,18 @@ import chess.ChessPosition;
 
 import java.util.Set;
 
-public class KnightMoveStrategy extends StaticMoveStrategy {
-    public KnightMoveStrategy(ChessBoard board, ChessPosition myPosition,
-                              ChessPiece myPiece) {
-        super(board, myPosition, myPiece);
+public class KnightMoveStrategy extends MoveStrategy {
+    public KnightMoveStrategy(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        super(board, myPosition, piece);
     }
 
-    static final int[][] moveDeltas = {{2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}};
-
     @Override
-    public void addMoves(Set<ChessMove> possibleMoves) {
-        addMovesFromDeltas(possibleMoves, moveDeltas);
+    public void addMoves(Set<ChessMove> moves) {
+        addStaticMoves(new int[][] {
+                {2, -1}, {2, 1},
+                {1, -2}, {1, 2},
+                {-1, -2}, {-1, 2},
+                {-2, -1}, {-2, 1}
+        }, moves);
     }
 }
