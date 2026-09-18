@@ -81,11 +81,13 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move");
         }
 
-        ChessPiece.PieceType promotion = move.getPromotionPiece();
-        piece = promotion == null ? piece : new ChessPiece(piece.getTeamColor(), promotion);
-        board.addPiece(move.getEndPosition(), piece);
-        board.addPiece(move.getStartPosition(), null);
+        ChessBoard newBoard = board.cloneWithMove(move);
 
+        if (isInCheck(newBoard, teamTurn, newBoard.findFirstPositionOf(teamTurn, ChessPiece.PieceType.KING))) {
+            throw new InvalidMoveException("Move leaves king in check");
+        }
+
+        setBoard(newBoard);
         toggleTeamTurn();
     }
 

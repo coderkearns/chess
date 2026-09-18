@@ -95,6 +95,22 @@ public class ChessBoard implements Iterable<ChessPosition> {
     }
 
     /**
+     * Returns a clone of the board with a given move made. Assumes move has already been validated.
+     */
+    public ChessBoard cloneWithMove(ChessMove move) {
+        var newBoard = new ChessBoard();
+        for (int row = 0; row < 7; row++) {
+            System.arraycopy(board[row], 0, newBoard.board[row], 0, 7);
+        }
+        ChessPiece piece = getPiece(move.getStartPosition());
+        ChessPiece.PieceType promotion = move.getPromotionPiece();
+        piece = promotion == null ? piece : new ChessPiece(piece.getTeamColor(), promotion);
+        newBoard.addPiece(move.getEndPosition(), piece);
+        newBoard.addPiece(move.getStartPosition(), null);
+        return newBoard;
+    }
+
+    /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
