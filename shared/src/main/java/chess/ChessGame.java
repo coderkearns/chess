@@ -110,7 +110,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return isInCheck(teamColor, board.findFirstPositionOf(teamColor, ChessPiece.PieceType.KING));
+        return isInCheck(board, teamColor, board.findFirstPositionOf(teamColor, ChessPiece.PieceType.KING));
     }
 
     /**
