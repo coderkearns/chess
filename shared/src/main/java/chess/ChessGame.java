@@ -89,11 +89,11 @@ public class ChessGame {
         toggleTeamTurn();
     }
 
-    private boolean isInCheck(TeamColor teamColor, ChessPosition targetPosition) {
-        for (var position : board) {
-            ChessPiece piece = board.getPiece(position);
+    private boolean isInCheck(ChessBoard currentBoard, TeamColor teamColor, ChessPosition targetPosition) {
+        for (var position : currentBoard) {
+            ChessPiece piece = currentBoard.getPiece(position);
             if (piece.getTeamColor() != teamColor) {
-                for (var move : piece.pieceMoves(board, position)) {
+                for (var move : piece.pieceMoves(currentBoard, position)) {
                     if (move.getEndPosition() == targetPosition) {
                         return true;
                     }
