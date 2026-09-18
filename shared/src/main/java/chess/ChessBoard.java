@@ -38,6 +38,18 @@ public class ChessBoard {
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    public ChessPosition findFirstPositionOf(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; row < 8; col++) {
+                ChessPiece piece = board[row][col];
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == pieceType) {
+                    return new ChessPosition(row + 1, col + 1);
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean isValid(ChessPosition position) {
         return position.getRow() > 0 && position.getRow() < 9 && position.getColumn() > 0 && position.getColumn() < 9;
     }
