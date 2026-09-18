@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Iterable<ChessPosition> {
 
     private ChessPiece[][] board = new ChessPiece[8][8];
 
@@ -36,6 +37,45 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    public class PieceIterator implements java.util.Iterator<ChessPosition> {
+        private int row = 0;
+        private int col = -1;
+
+        @Override
+        public boolean hasNext() {
+            return row < 7 || col < 7;
+        }
+
+        private void advance() {
+            if (col == 7) {
+                if (row == 7) {
+                    throw new NoSuchElementException();
+                } else {
+                    col = 0;
+                    row += 1;
+                }
+            } else {
+                col += 1;
+            }
+        }
+
+        @Override
+        public ChessPosition next() {
+            advance();
+            ChessPiece current = board[row][col];
+            while (current == null) {
+                advance();
+                current = board[row][col];
+            }
+            return new ChessPosition(row + 1, col + 1);
+        }
+    }
+
+    @Override
+    public java.util.Iterator<ChessPosition> iterator() {
+        return new PieceIterator();
     }
 
     public ChessPosition findFirstPositionOf(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {

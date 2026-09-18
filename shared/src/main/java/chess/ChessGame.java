@@ -89,6 +89,20 @@ public class ChessGame {
         toggleTeamTurn();
     }
 
+    private boolean isInCheck(TeamColor teamColor, ChessPosition targetPosition) {
+        for (var position : board) {
+            ChessPiece piece = board.getPiece(position);
+            if (piece.getTeamColor() != teamColor) {
+                for (var move : piece.pieceMoves(board, position)) {
+                    if (move.getEndPosition() == targetPosition) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -96,7 +110,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheck(teamColor, board.findFirstPositionOf(teamColor, ChessPiece.PieceType.KING));
     }
 
     /**
