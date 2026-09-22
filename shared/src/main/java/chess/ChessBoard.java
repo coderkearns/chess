@@ -43,8 +43,8 @@ public class ChessBoard implements Iterable<ChessPosition> {
     public java.util.Iterator<ChessPosition> iterator() {
         var positions = new ArrayList<ChessPosition>();
 
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 7; col++) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
                 if (board[row][col] != null) {
                     positions.add(new ChessPosition(row + 1, col + 1));
                 }
@@ -56,7 +56,7 @@ public class ChessBoard implements Iterable<ChessPosition> {
 
     public ChessPosition findFirstPositionOf(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
         for (int row = 0; row < 8; row++) {
-            for (int col = 0; row < 8; col++) {
+            for (int col = 0; col < 8; col++) {
                 ChessPiece piece = board[row][col];
                 if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == pieceType) {
                     return new ChessPosition(row + 1, col + 1);
@@ -75,8 +75,8 @@ public class ChessBoard implements Iterable<ChessPosition> {
      */
     public ChessBoard cloneWithMove(ChessMove move) {
         var newBoard = new ChessBoard();
-        for (int row = 0; row < 7; row++) {
-            System.arraycopy(board[row], 0, newBoard.board[row], 0, 7);
+        for (int row = 0; row < 8; row++) {
+            System.arraycopy(board[row], 0, newBoard.board[row], 0, 8);
         }
         ChessPiece piece = getPiece(move.getStartPosition());
         ChessPiece.PieceType promotion = move.getPromotionPiece();
