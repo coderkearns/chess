@@ -96,7 +96,7 @@ public class ChessGame {
             ChessPiece piece = currentBoard.getPiece(position);
             if (piece.getTeamColor() != teamColor) {
                 for (var move : piece.pieceMoves(currentBoard, position)) {
-                    if (move.getEndPosition() == targetPosition) {
+                    if (move.getEndPosition().equals(targetPosition)) {
                         return true;
                     }
                 }
