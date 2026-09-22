@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -51,7 +52,22 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        return piece == null ? null : piece.pieceMoves(board, startPosition);
+
+        if (piece == null) {
+            return null;
+        }
+
+        var safeMoves = new HashSet<ChessMove>();
+        var moves = piece.pieceMoves(board, startPosition);
+
+        for (var move : moves) {
+            ChessBoard newBoard = board.cloneWithMove(move);
+            if (!isInCheck(newBoard, piece.getTeamColor(), newBoard.findFirstPositionOf(piece.getTeamColor(), ChessPiece.PieceType.KING))) {
+                safeMoves.add(move);
+            }
+        }
+
+        return safeMoves;
     }
 
     private void toggleTeamTurn() {
@@ -75,19 +91,13 @@ public class ChessGame {
             throw new InvalidMoveException("It's not their turn");
         }
 
-        Collection<ChessMove> validMoves = piece.pieceMoves(board, move.getStartPosition());
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
 
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Invalid move");
         }
 
-        ChessBoard newBoard = board.cloneWithMove(move);
-
-        if (isInCheck(newBoard, teamTurn, newBoard.findFirstPositionOf(teamTurn, ChessPiece.PieceType.KING))) {
-            throw new InvalidMoveException("Move leaves king in check");
-        }
-
-        setBoard(newBoard);
+        setBoard(board.cloneWithMove(move));
         toggleTeamTurn();
     }
 
