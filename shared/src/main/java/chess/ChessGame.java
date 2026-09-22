@@ -126,13 +126,37 @@ public class ChessGame {
     }
 
     /**
+     * Checks if any of a given team's pieces is capable of moving without causing check
+     *
+     * @param teamColor which team to check for safe moves
+     * @return True if the specified team is in checkmate
+     */
+    private boolean hasSafeMoves(TeamColor teamColor) {
+        for (var position : board) {
+            ChessPiece piece = board.getPiece(position);
+            // Check every one of our pieces
+            if (piece.getTeamColor() == teamColor) {
+                // Try every move to see if there is any spot not in check
+                for (var move : piece.pieceMoves(board, position)) {
+                    ChessBoard newBoard = board.cloneWithMove(move);
+                    if (!isInCheck(newBoard, teamColor, newBoard.findFirstPositionOf(teamColor, ChessPiece.PieceType.KING))) {
+                        // Found a safe move!
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Determines if the given team is in checkmate
      *
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheck(teamColor) && !hasSafeMoves(teamColor);
     }
 
     /**
@@ -143,7 +167,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return !isInCheck(teamColor) && !hasSafeMoves(teamColor);
     }
 
     /**
