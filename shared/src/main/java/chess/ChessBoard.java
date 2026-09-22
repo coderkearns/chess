@@ -1,7 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -39,43 +39,19 @@ public class ChessBoard implements Iterable<ChessPosition> {
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
-    public class PieceIterator implements java.util.Iterator<ChessPosition> {
-        private int row = 0;
-        private int col = -1;
-
-        @Override
-        public boolean hasNext() {
-            return row < 7 || col < 7;
-        }
-
-        private void advance() {
-            if (col == 7) {
-                if (row == 7) {
-                    throw new NoSuchElementException();
-                } else {
-                    col = 0;
-                    row += 1;
-                }
-            } else {
-                col += 1;
-            }
-        }
-
-        @Override
-        public ChessPosition next() {
-            advance();
-            ChessPiece current = board[row][col];
-            while (current == null) {
-                advance();
-                current = board[row][col];
-            }
-            return new ChessPosition(row + 1, col + 1);
-        }
-    }
-
     @Override
     public java.util.Iterator<ChessPosition> iterator() {
-        return new PieceIterator();
+        var positions = new ArrayList<ChessPosition>();
+
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 7; col++) {
+                if (board[row][col] != null) {
+                    positions.add(new ChessPosition(row + 1, col + 1));
+                }
+            }
+        }
+
+        return positions.iterator();
     }
 
     public ChessPosition findFirstPositionOf(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
