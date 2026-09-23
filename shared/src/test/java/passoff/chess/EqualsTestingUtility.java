@@ -32,7 +32,6 @@ public abstract class EqualsTestingUtility<T> {
     }
 
     protected abstract T buildOriginal();
-
     protected abstract Collection<T> buildAllDifferent();
 
 
@@ -40,7 +39,6 @@ public abstract class EqualsTestingUtility<T> {
     public void setUp() {
         original = buildOriginal();
         equivalent = buildOriginal(); // For a second time
-        boolean equals = original.equals(equivalent);
         allDifferent = buildAllDifferent();
     }
 
