@@ -1,7 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -39,48 +39,24 @@ public class ChessBoard implements Iterable<ChessPosition> {
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
-    public class PieceIterator implements java.util.Iterator<ChessPosition> {
-        private int row = 0;
-        private int col = -1;
-
-        @Override
-        public boolean hasNext() {
-            return row < 7 || col < 7;
-        }
-
-        private void advance() {
-            if (col == 7) {
-                if (row == 7) {
-                    throw new NoSuchElementException();
-                } else {
-                    col = 0;
-                    row += 1;
-                }
-            } else {
-                col += 1;
-            }
-        }
-
-        @Override
-        public ChessPosition next() {
-            advance();
-            ChessPiece current = board[row][col];
-            while (current == null) {
-                advance();
-                current = board[row][col];
-            }
-            return new ChessPosition(row + 1, col + 1);
-        }
-    }
-
     @Override
     public java.util.Iterator<ChessPosition> iterator() {
-        return new PieceIterator();
+        var positions = new ArrayList<ChessPosition>();
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board[row][col] != null) {
+                    positions.add(new ChessPosition(row + 1, col + 1));
+                }
+            }
+        }
+
+        return positions.iterator();
     }
 
     public ChessPosition findFirstPositionOf(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
         for (int row = 0; row < 8; row++) {
-            for (int col = 0; row < 8; col++) {
+            for (int col = 0; col < 8; col++) {
                 ChessPiece piece = board[row][col];
                 if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == pieceType) {
                     return new ChessPosition(row + 1, col + 1);
@@ -92,6 +68,22 @@ public class ChessBoard implements Iterable<ChessPosition> {
 
     public boolean isValid(ChessPosition position) {
         return position.getRow() > 0 && position.getRow() < 9 && position.getColumn() > 0 && position.getColumn() < 9;
+    }
+
+    /**
+     * Returns a clone of the board with a given move made. Assumes move has already been validated.
+     */
+    public ChessBoard cloneWithMove(ChessMove move) {
+        var newBoard = new ChessBoard();
+        for (int row = 0; row < 8; row++) {
+            System.arraycopy(board[row], 0, newBoard.board[row], 0, 8);
+        }
+        ChessPiece piece = getPiece(move.getStartPosition());
+        ChessPiece.PieceType promotion = move.getPromotionPiece();
+        piece = promotion == null ? piece : new ChessPiece(piece.getTeamColor(), promotion);
+        newBoard.addPiece(move.getEndPosition(), piece);
+        newBoard.addPiece(move.getStartPosition(), null);
+        return newBoard;
     }
 
     /**
