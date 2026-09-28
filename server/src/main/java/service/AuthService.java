@@ -8,10 +8,7 @@ public class AuthService {
     public AuthService(AuthDAO authDAO) {
         this.authDAO = authDAO;
     }
-
-    /**
-     * Delete all authTokens.
-     */
+    
     public void clear() {
         authDAO.clear();
     }
