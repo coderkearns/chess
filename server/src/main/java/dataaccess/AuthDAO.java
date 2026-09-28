@@ -1,23 +1,25 @@
 package dataaccess;
 
+import model.AuthData;
+
 public interface AuthDAO {
     /**
-     * Stores a new authToken in the data layer. Returns true if it was added successfully, or false if it already exists.
+     * Stores a new auth in the data layer. Returns true if it was added successfully, or false if it already exists.
      */
-    boolean add(String authToken);
+    boolean add(AuthData auth);
 
     /**
-     * Checks if an authToken is stored in the data layer.
+     * Checks if an auth is stored in the data layer.
      */
-    boolean exists(String authToken);
+    boolean exists(AuthData auth);
 
     /**
-     * Removes an authToken from the data layer. Returns true if it existed and was deleted, or false if it didn't exist.
+     * Removes an auth from the data layer. Returns true if it existed and was deleted, or false if it didn't exist.
      */
-    boolean delete(String authToken);
+    boolean delete(AuthData auth);
 
     /**
-     * Wipes all authTokens from the data layer.
+     * Wipes all auths from the data layer.
      */
     void clear();
 }

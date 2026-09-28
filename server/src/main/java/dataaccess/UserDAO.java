@@ -1,9 +1,8 @@
 package dataaccess;
 
-public interface UserDAO {
-    public static record UserData(String username, String password, String email) {
-    }
+import model.UserData;
 
+public interface UserDAO {
     /**
      * Stores a new user in the data layer. Returns true if they were added successfully, or false if they already exist.
      */
@@ -15,7 +14,7 @@ public interface UserDAO {
     boolean exists(UserData user);
 
     /**
-     * Removes a user from the data layer. Returns true if it existed and was deleted, or false if it didn't exist.
+     * Removes a user from the data layer. Returns true if they existed and were deleted, or false if they didn't exist.
      */
     boolean delete(UserData user);
 
