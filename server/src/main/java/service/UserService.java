@@ -8,4 +8,8 @@ public class UserService {
     public UserService(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
+
+    public void clear() {
+        userDAO.clear();
+    }
 }

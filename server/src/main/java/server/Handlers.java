@@ -55,8 +55,9 @@ public class Handlers {
     }
 
     public void deleteDb(Context ctx) {
-        // TODO implement for users and games
         authService.clear();
+        gameService.clear();
+        userService.clear();
         // Defaults to 200 OK with an empty body
         // This should return a 204, but the phase 3 spec specifies 200
     }
