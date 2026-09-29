@@ -16,7 +16,7 @@ public class AuthService {
      */
     public String verify(String authToken) {
         if (!authDAO.exists(new AuthData(authToken, null))) {
-            throw new NotAuthorizedException("invalid authToken");
+            throw new NotAuthorizedException();
         }
         return authToken;
     }

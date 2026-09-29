@@ -22,7 +22,7 @@ public class UserService {
     public AuthData register(UserData req) {
         var existingUser = userDAO.find(req.username());
         if (existingUser != null) {
-            throw new AlreadyTakenException("already taken");
+            throw new AlreadyTakenException();
         }
         userDAO.add(req);
         var auth = generateAuth(req);
@@ -36,7 +36,7 @@ public class UserService {
     public AuthData login(LoginRequest req) {
         var existingUser = userDAO.find(req.username());
         if (existingUser == null || !Objects.equals(req.password(), existingUser.password())) {
-            throw new NotAuthorizedException("not authorized");
+            throw new NotAuthorizedException();
         }
         var auth = generateAuth(existingUser);
         authDAO.add(auth);

@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import exceptions.Exceptions;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
@@ -21,14 +22,26 @@ public class Handlers {
         gson = new Gson();
     }
 
+    /* --- HELPERS --- */
+    private void validateNotNull(Object... params) {
+        for (Object param : params) {
+            if (param == null) {
+                throw new Exceptions.BadRequestException();
+            }
+        }
+    }
+
+    /* --- ROUTES --- */
     public void postUser(Context ctx) {
         UserData user = gson.fromJson(ctx.body(), UserData.class);
+        validateNotNull(user.username(), user.password(), user.email());
         AuthData auth = userService.register(user);
         ctx.result(gson.toJson(auth));
     }
 
     public void postSession(Context ctx) {
         UserService.LoginRequest loginRequest = gson.fromJson(ctx.body(), UserService.LoginRequest.class);
+        validateNotNull(loginRequest.username(), loginRequest.password());
         AuthData auth = userService.login(loginRequest);
         ctx.result(gson.toJson(auth));
     }
@@ -64,5 +77,26 @@ public class Handlers {
         userService.clear();
         // Defaults to 200 OK with an empty body
         // This should return a 204, but the phase 3 spec specifies 200
+    }
+
+    /* --- EXCEPTIONS --- */
+    public void handleBadRequestException(Exceptions.BadRequestException e, Context ctx) {
+        ctx.result("{\"message\": \"Error: bad request\"}").status(400);
+    }
+    
+    public void handleNotAuthorizedException(Exceptions.NotAuthorizedException e, Context ctx) {
+        ctx.result("{\"message\": \"Error: not authorized\"}").status(401);
+    }
+
+    public void handleAlreadyTakenException(Exceptions.AlreadyTakenException e, Context ctx) {
+        ctx.result("{\"message\": \"Error: already taken\"}").status(500);
+    }
+
+    public void handleNotFoundException(Exceptions.NotFoundException e, Context ctx) {
+        ctx.result("{\"message\": \"Error: not found\"}").status(500);
+    }
+
+    public void handleGenericException(RuntimeException e, Context ctx) {
+        ctx.result("{\"message\": \"Error: internal server error\"}").status(500);
     }
 }

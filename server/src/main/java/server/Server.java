@@ -3,6 +3,7 @@ package server;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
+import exceptions.Exceptions;
 import io.javalin.Javalin;
 import service.AuthService;
 import service.GameService;
@@ -16,7 +17,7 @@ public class Server {
         var authDAO = new MemoryAuthDAO();
         var gameDAO = new MemoryGameDAO();
         var userDAO = new MemoryUserDAO();
-        
+
         var authService = new AuthService(authDAO);
         var gameService = new GameService(gameDAO);
         var userService = new UserService(userDAO, authDAO);
@@ -30,7 +31,12 @@ public class Server {
                 .get("/game", handlers::getGame)
                 .post("/game", handlers::postGame)
                 .put("/game", handlers::putGame)
-                .delete("/db", handlers::deleteDb);
+                .delete("/db", handlers::deleteDb)
+                .exception(Exceptions.BadRequestException.class, handlers::handleBadRequestException)
+                .exception(Exceptions.NotAuthorizedException.class, handlers::handleNotAuthorizedException)
+                .exception(Exceptions.AlreadyTakenException.class, handlers::handleAlreadyTakenException)
+                .exception(Exceptions.NotFoundException.class, handlers::handleNotFoundException)
+                .exception(RuntimeException.class, handlers::handleGenericException);
     }
 
     public int run(int desiredPort) {
