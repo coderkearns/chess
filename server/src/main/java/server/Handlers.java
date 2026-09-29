@@ -21,14 +21,6 @@ public class Handlers {
         gson = new Gson();
     }
 
-    // Example handler
-    // public void addPet(Context ctx) throws ResponseException {
-    // Pet pet = new Gson().fromJson(ctx.body(), Pet.class);
-    // pet = service.addPet(pet);
-    // webSocketHandler.makeNoise(pet.name(), pet.sound());
-    // ctx.result(new Gson().toJson(pet));
-    // }
-
     public void postUser(Context ctx) {
         UserData user = gson.fromJson(ctx.body(), UserData.class);
         AuthData auth = userService.register(user);
