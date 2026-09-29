@@ -3,6 +3,7 @@ package dataaccess;
 import model.UserData;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class MemoryUserDAO implements UserDAO {
@@ -19,12 +20,16 @@ public class MemoryUserDAO implements UserDAO {
         return records.contains(user);
     }
 
-    public boolean delete(UserData user) {
-        return records.remove(user);
+    public UserData find(String username) {
+        for (var record : records) {
+            if (Objects.equals(record.username(), username)) {
+                return record;
+            }
+        }
+        return null;
     }
 
     public void clear() {
         records.clear();
     }
-
 }

@@ -1,9 +1,8 @@
 package service;
 
 import dataaccess.AuthDAO;
+import exceptions.Exceptions.NotAuthorizedException;
 import model.AuthData;
-
-import java.util.UUID;
 
 public class AuthService {
     final AuthDAO authDAO;
@@ -12,25 +11,14 @@ public class AuthService {
         this.authDAO = authDAO;
     }
 
-    private static String generateToken() {
-        return UUID.randomUUID().toString();
-    }
-
     /**
-     * Generates a new auth token for the given username, stores it in the data layer,
-     * then returns the created auth data.
+     * Throws a NotAuthorizedException if the authToken is invalid. Returns the provided token otherwise.
      */
-    public AuthData createAuth(String username) {
-        var auth = new AuthData(generateToken(), username);
-        authDAO.add(auth);
-        return auth;
-    }
-
-    /**
-     * Returns true if the given authToken is valid in the data layer.
-     */
-    public boolean verify(String authToken) {
-        return authDAO.exists(new AuthData(authToken, null));
+    public String verify(String authToken) {
+        if (!authDAO.exists(new AuthData(authToken, null))) {
+            throw new NotAuthorizedException("invalid authToken");
+        }
+        return authToken;
     }
 
     /**

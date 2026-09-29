@@ -14,9 +14,9 @@ public interface UserDAO {
     boolean exists(UserData user);
 
     /**
-     * Removes a user from the data layer. Returns true if they existed and were deleted, or false if they didn't exist.
+     * Finds a user with a specified username, or returns null if none exists.
      */
-    boolean delete(UserData user);
+    public UserData find(String username);
 
     /**
      * Wipes all users from the data layer.

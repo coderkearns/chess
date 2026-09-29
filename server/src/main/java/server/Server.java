@@ -13,9 +13,13 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        var authService = new AuthService(new MemoryAuthDAO());
-        var gameService = new GameService(new MemoryGameDAO());
-        var userService = new UserService(new MemoryUserDAO());
+        var authDAO = new MemoryAuthDAO();
+        var gameDAO = new MemoryGameDAO();
+        var userDAO = new MemoryUserDAO();
+        
+        var authService = new AuthService(authDAO);
+        var gameService = new GameService(gameDAO);
+        var userService = new UserService(userDAO, authDAO);
 
         var handlers = new Handlers(authService, gameService, userService);
 
