@@ -21,6 +21,8 @@ public class AuthService {
         return authToken;
     }
 
+    /* --- Methods --- */
+
     /**
      * Deletes an auth token from the data layer. Returns true if it existed and was deleted.
      */

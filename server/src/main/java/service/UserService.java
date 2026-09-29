@@ -19,6 +19,22 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
+    /*--- Helpers ---*/
+
+    /**
+     * Generate a random auth record for a given user
+     */
+    private AuthData generateAuth(UserData user) {
+        return new AuthData(UUID.randomUUID().toString(), user.username());
+    }
+
+    /* --- DTOs --- */
+
+    public static record LoginRequest(String username, String password) {
+    }
+    
+    /* --- Methods --- */
+
     public AuthData register(UserData req) {
         var existingUser = userDAO.find(req.username());
         if (existingUser != null) {
@@ -28,9 +44,6 @@ public class UserService {
         var auth = generateAuth(req);
         authDAO.add(auth);
         return auth;
-    }
-
-    public static record LoginRequest(String username, String password) {
     }
 
     public AuthData login(LoginRequest req) {
@@ -46,14 +59,5 @@ public class UserService {
 
     public void clear() {
         userDAO.clear();
-    }
-
-    /*--- Helpers ---*/
-
-    /**
-     * Generate a random auth record for a given user
-     */
-    private AuthData generateAuth(UserData user) {
-        return new AuthData(UUID.randomUUID().toString(), user.username());
     }
 }

@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.GameData;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,8 +16,17 @@ public class MemoryGameDAO implements GameDAO {
         return records.add(game);
     }
 
-    public boolean exists(GameData game) {
-        return records.contains(game);
+    public GameData find(int gameID) {
+        for (var record : records) {
+            if (record.gameID() == gameID) {
+                return record;
+            }
+        }
+        return null;
+    }
+
+    public Collection<GameData> getAll() {
+        return records;
     }
 
     public boolean delete(GameData game) {

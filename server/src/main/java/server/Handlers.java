@@ -59,20 +59,23 @@ public class Handlers {
 
     public void getGame(Context ctx) {
         authService.verify(ctx.header("Authorization"));
-        // TODO implement
-        ctx.result("{\"success\":true}");
+        var games = gameService.listGames();
+        ctx.result(gson.toJson(games));
     }
 
     public void postGame(Context ctx) {
         authService.verify(ctx.header("Authorization"));
-        // TODO implement
-        ctx.result("{\"success\":true}");
+        GameService.NewGameRequest newGameRequest = gson.fromJson(ctx.body(), GameService.NewGameRequest.class);
+        var newGameResponse = gameService.newGame(newGameRequest);
+        ctx.result(gson.toJson(newGameResponse));
     }
 
     public void putGame(Context ctx) {
         authService.verify(ctx.header("Authorization"));
-        // TODO implement
-        ctx.result("{\"success\":true}");
+        GameService.JoinGameRequest joinGameRequest = gson.fromJson(ctx.body(), GameService.JoinGameRequest.class);
+        gameService.joinGame(joinGameRequest);
+        // Defaults to 200 OK with an empty body
+        // This should return a 204, but the phase 3 spec specifies 200
     }
 
     public void deleteDb(Context ctx) {
