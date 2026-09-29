@@ -23,6 +23,10 @@ public class Handlers {
     }
 
     /* --- HELPERS --- */
+
+    /**
+     * Throws a BadRequestException if provided any nulls
+     */
     private void validateNotNull(Object... params) {
         for (Object param : params) {
             if (param == null) {
@@ -83,17 +87,17 @@ public class Handlers {
     public void handleBadRequestException(Exceptions.BadRequestException e, Context ctx) {
         ctx.result("{\"message\": \"Error: bad request\"}").status(400);
     }
-    
+
     public void handleNotAuthorizedException(Exceptions.NotAuthorizedException e, Context ctx) {
         ctx.result("{\"message\": \"Error: not authorized\"}").status(401);
     }
 
     public void handleAlreadyTakenException(Exceptions.AlreadyTakenException e, Context ctx) {
-        ctx.result("{\"message\": \"Error: already taken\"}").status(500);
+        ctx.result("{\"message\": \"Error: already taken\"}").status(403);
     }
 
     public void handleNotFoundException(Exceptions.NotFoundException e, Context ctx) {
-        ctx.result("{\"message\": \"Error: not found\"}").status(500);
+        ctx.result("{\"message\": \"Error: not found\"}").status(404);
     }
 
     public void handleGenericException(RuntimeException e, Context ctx) {
