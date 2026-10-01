@@ -66,14 +66,16 @@ public class Handlers {
     public void postGame(Context ctx) {
         authService.verify(ctx.header("Authorization"));
         GameService.NewGameRequest newGameRequest = gson.fromJson(ctx.body(), GameService.NewGameRequest.class);
+        validateNotNull(newGameRequest.gameName());
         var newGameResponse = gameService.newGame(newGameRequest);
         ctx.result(gson.toJson(newGameResponse));
     }
 
     public void putGame(Context ctx) {
-        authService.verify(ctx.header("Authorization"));
+        var authToken = authService.verify(ctx.header("Authorization"));
         GameService.JoinGameRequest joinGameRequest = gson.fromJson(ctx.body(), GameService.JoinGameRequest.class);
-        gameService.joinGame(joinGameRequest);
+        validateNotNull(joinGameRequest.gameID(), joinGameRequest.playerColor());
+        gameService.joinGame(authToken, joinGameRequest);
         // Defaults to 200 OK with an empty body
         // This should return a 204, but the phase 3 spec specifies 200
     }

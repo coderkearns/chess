@@ -19,7 +19,7 @@ public class Server {
         var userDAO = new MemoryUserDAO();
 
         var authService = new AuthService(authDAO);
-        var gameService = new GameService(gameDAO);
+        var gameService = new GameService(authDAO, gameDAO);
         var userService = new UserService(userDAO, authDAO);
 
         var handlers = new Handlers(authService, gameService, userService);

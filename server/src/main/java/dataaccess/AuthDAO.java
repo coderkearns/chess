@@ -14,6 +14,11 @@ public interface AuthDAO {
     boolean exists(AuthData auth);
 
     /**
+     * Finds a username attached to a given auth token. Returns null if it doesn't exist.
+     */
+    String getUsername(String authToken);
+
+    /**
      * Removes an auth from the data layer. Returns true if it existed and was deleted, or false if it didn't exist.
      */
     boolean delete(AuthData auth);

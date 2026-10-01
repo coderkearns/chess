@@ -14,7 +14,12 @@ public interface GameDAO {
      * Finds the specified game, or null if it doesn't exist.
      */
     GameData find(int gameID);
-    
+
+    /**
+     * Sets a game with data, overriding the previous data.
+     */
+    void setGame(GameData game);
+
     /**
      * Returns all the games in the data layer.
      */

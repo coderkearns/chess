@@ -3,34 +3,38 @@ package dataaccess;
 import model.GameData;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
-    private final Set<GameData> records = new HashSet<GameData>();
+    private final Map<Integer, GameData> records = new HashMap<Integer, GameData>();
 
     public MemoryGameDAO() {
     }
 
     public boolean add(GameData game) {
-        return records.add(game);
+        if (records.containsKey(game.gameID())) {
+            return false;
+        }
+        records.put(game.gameID(), game);
+        return true;
+    }
+
+    public void setGame(GameData game) {
+        records.put(game.gameID(), game);
     }
 
     public GameData find(int gameID) {
-        for (var record : records) {
-            if (record.gameID() == gameID) {
-                return record;
-            }
-        }
-        return null;
+        return records.get(gameID);
     }
 
     public Collection<GameData> getAll() {
-        return records;
+        return records.values();
     }
 
     public boolean delete(GameData game) {
-        return records.remove(game);
+        var removed = records.remove(game.gameID());
+        return removed != null;
     }
 
     public void clear() {

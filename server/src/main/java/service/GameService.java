@@ -1,18 +1,23 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
+import exceptions.Exceptions;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class GameService {
     final GameDAO gameDAO;
+    final AuthDAO authDAO;
 
     private int nextGameID;
 
-    public GameService(GameDAO gameDAO) {
+    public GameService(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authDAO = authDAO;
         this.gameDAO = gameDAO;
         nextGameID = 1;
     }
@@ -52,7 +57,27 @@ public class GameService {
         return new NewGameResponse(newGame.gameID());
     }
 
-    public void joinGame(JoinGameRequest req) {
+    public void joinGame(String authToken, JoinGameRequest req) {
+        if (!Objects.equals(req.playerColor(), "WHITE") && !Objects.equals(req.playerColor(), "BLACK")) {
+            throw new Exceptions.BadRequestException();
+        }
+
+        var game = gameDAO.find(req.gameID());
+        if (game == null) {
+            throw new Exceptions.BadRequestException();
+        }
+
+        String current = req.playerColor().equals("WHITE") ? game.whiteUsername() : game.blackUsername();
+        if (current != null) {
+            throw new Exceptions.AlreadyTakenException();
+        }
+
+        String playerUsername = authDAO.getUsername(authToken);
+
+        String newWhiteUsername = req.playerColor().equals("WHITE") ? playerUsername : game.whiteUsername();
+        String newBlackUsername = req.playerColor().equals("BLACK") ? playerUsername : game.blackUsername();
+
+        gameDAO.setGame(new GameData(game.gameID(), newWhiteUsername, newBlackUsername, game.gameName(), game.game()));
     }
 
     public void clear() {
