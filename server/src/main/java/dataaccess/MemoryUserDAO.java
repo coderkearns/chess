@@ -15,11 +15,7 @@ public class MemoryUserDAO implements UserDAO {
     public boolean add(UserData user) {
         return records.add(user);
     }
-
-    public boolean exists(UserData user) {
-        return records.contains(user);
-    }
-
+    
     public UserData find(String username) {
         for (var record : records) {
             if (Objects.equals(record.username(), username)) {
