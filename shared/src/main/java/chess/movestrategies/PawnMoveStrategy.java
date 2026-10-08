@@ -50,9 +50,11 @@ public class PawnMoveStrategy extends MoveStrategy {
         }
 
         // attack diagonally
-        for (int colDelta : new int[] {-1, 1}) {
+        for (int colDelta : new int[]{-1, 1}) {
             ChessPosition diagonalPosition = myPosition.delta(rowDelta, colDelta);
-            if (isPositionValid(diagonalPosition) && board.getPiece(diagonalPosition) != null && board.getPiece(diagonalPosition).getTeamColor() != piece.getTeamColor()) {
+            if (isPositionValid(diagonalPosition)
+                    && board.getPiece(diagonalPosition) != null
+                    && board.getPiece(diagonalPosition).getTeamColor() != piece.getTeamColor()) {
                 addPossiblePromotionMove(diagonalPosition, moves);
             }
         }
