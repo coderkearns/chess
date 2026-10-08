@@ -9,9 +9,14 @@ public interface AuthDAO {
     boolean add(AuthData auth);
 
     /**
+     * Checks if an auth for a given username is stored in the data layer.
+     */
+    boolean usernameExists(AuthData auth);
+
+    /**
      * Checks if an auth is stored in the data layer.
      */
-    boolean exists(AuthData auth);
+    boolean tokenExists(AuthData auth);
 
     /**
      * Finds a username attached to a given auth token. Returns null if it doesn't exist.

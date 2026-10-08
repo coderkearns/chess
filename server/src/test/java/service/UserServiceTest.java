@@ -25,7 +25,6 @@ class UserServiceTest {
         authDAO = new MemoryAuthDAO();
         userDAO = new MemoryUserDAO();
         userDAO.add(existingUser);
-        authDAO.add(existingUserAuth);
         service = new UserService(userDAO, authDAO);
     }
 
@@ -38,7 +37,7 @@ class UserServiceTest {
         assertEquals(nonexistentUser.username(), newAuth.username());
         assertNotNull(newAuth.authToken());
         assertFalse(newAuth.authToken().isEmpty());
-        assertTrue(authDAO.exists(newAuth));
+        assertTrue(authDAO.tokenExists(newAuth));
     }
 
     @Test
@@ -55,7 +54,7 @@ class UserServiceTest {
         assertEquals(existingUser.username(), newAuth.username());
         assertNotNull(newAuth.authToken());
         assertFalse(newAuth.authToken().isEmpty());
-        assertTrue(authDAO.exists(newAuth));
+        assertTrue(authDAO.tokenExists(newAuth));
     }
 
     @Test

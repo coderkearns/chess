@@ -32,7 +32,7 @@ public class UserService {
 
     public static record LoginRequest(String username, String password) {
     }
-    
+
     /* --- Methods --- */
 
     public AuthData register(UserData req) {
@@ -52,7 +52,10 @@ public class UserService {
             throw new NotAuthorizedException();
         }
         var auth = generateAuth(existingUser);
-        authDAO.add(auth);
+        var successful = authDAO.add(auth);
+        if (!successful) {
+            throw new AlreadyTakenException();
+        }
         return auth;
     }
 

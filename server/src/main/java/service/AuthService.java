@@ -15,7 +15,7 @@ public class AuthService {
      * Throws a NotAuthorizedException if the authToken is invalid. Returns the provided token otherwise.
      */
     public String verify(String authToken) {
-        if (!authDAO.exists(new AuthData(authToken, null))) {
+        if (!authDAO.tokenExists(new AuthData(authToken, null))) {
             throw new NotAuthorizedException();
         }
         return authToken;
