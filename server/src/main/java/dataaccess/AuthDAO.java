@@ -7,12 +7,7 @@ public interface AuthDAO {
      * Stores a new auth in the data layer. Returns true if it was added successfully, or false if it already exists.
      */
     boolean add(AuthData auth);
-
-    /**
-     * Checks if an auth for a given username is stored in the data layer.
-     */
-    boolean usernameExists(AuthData auth);
-
+    
     /**
      * Checks if an auth is stored in the data layer.
      */
