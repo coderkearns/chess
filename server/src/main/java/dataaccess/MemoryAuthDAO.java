@@ -12,7 +12,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     public boolean add(AuthData auth) {
-        if (tokenExists(auth) || usernameExists(auth)) {
+        if (tokenExists(auth)) {
             return false;
         }
         records.put(auth.authToken(), auth.username());

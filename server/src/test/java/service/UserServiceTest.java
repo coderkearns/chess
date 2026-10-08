@@ -67,10 +67,10 @@ class UserServiceTest {
     @Test
     void loginTwice() {
         var loginRequest = new UserService.LoginRequest(existingUser.username(), existingUser.password());
-        service.login(loginRequest);
-        assertThrows(Exceptions.AlreadyTakenException.class, () -> {
-            service.login(loginRequest);
-        });
+        var authOne = service.login(loginRequest);
+        var authTwo = service.login(loginRequest);
+        assertEquals(authOne.username(), authTwo.username());
+        assertNotEquals(authOne.authToken(), authTwo.authToken());
     }
 
     @Test

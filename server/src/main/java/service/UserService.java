@@ -52,10 +52,7 @@ public class UserService {
             throw new NotAuthorizedException();
         }
         var auth = generateAuth(existingUser);
-        var successful = authDAO.add(auth);
-        if (!successful) {
-            throw new AlreadyTakenException();
-        }
+        authDAO.add(auth);
         return auth;
     }
 
