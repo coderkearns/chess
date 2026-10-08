@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
-    private final Map<Integer, GameData> records = new HashMap<Integer, GameData>();
+    public final Map<Integer, GameData> records = new HashMap<Integer, GameData>();
 
     public MemoryGameDAO() {
     }
