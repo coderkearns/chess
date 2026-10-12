@@ -13,12 +13,16 @@ public class SQLAuthDAO implements AuthDAO {
     public boolean add(AuthData auth) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("INSERT IGNORE INTO auth (token, username) VALUES (?, ?)")) {
+                preparedStatement.setString(1, auth.authToken());
+                preparedStatement.setString(2, auth.username());
+                preparedStatement.executeUpdate();
 
+                var changedRows = preparedStatement.getUpdateCount();
+                return changedRows == 1;
             }
         } catch (SQLException e) {
             throw new DataAccessException("inserting new auth failed", e);
         }
-        return false;
     }
 
     @Override
