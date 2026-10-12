@@ -34,13 +34,25 @@ public class SQLAuthDAO implements AuthDAO {
                 return resultSet != null && resultSet.next();
             }
         } catch (SQLException e) {
-            throw new DataAccessException("inserting new auth failed", e);
+            throw new DataAccessException("finding auth failed", e);
         }
     }
 
     @Override
     public String getUsername(String authToken) throws DataAccessException {
-        return "";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM auth WHERE token = ?")) {
+                preparedStatement.setString(1, authToken);
+                var resultSet = preparedStatement.executeQuery();
+                if (resultSet != null && resultSet.next()) {
+                    return resultSet.getString("username");
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("finding auth failed", e);
+        }
     }
 
     @Override
