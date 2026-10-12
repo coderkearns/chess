@@ -33,8 +33,15 @@ class SQLAuthDAOTest {
         assertTrue(added);
     }
 
-    @Test
-    void tokenExists() throws DataAccessException {
+    @ParameterizedTest
+    @ValueSource(classes = {SQLAuthDAO.class, MemoryAuthDAO.class})
+    void tokenExists(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+        AuthDAO dao = getDataAccess(dbClass);
+
+        AuthData auth = new AuthData("token", "username");
+        dao.add(auth);
+
+        assertTrue(dao.tokenExists(auth));
     }
 
     @Test

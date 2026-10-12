@@ -27,7 +27,15 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public boolean tokenExists(AuthData auth) throws DataAccessException {
-        return false;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT token FROM auth WHERE token = ?")) {
+                preparedStatement.setString(1, auth.authToken());
+                var resultSet = preparedStatement.executeQuery();
+                return resultSet != null && resultSet.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("inserting new auth failed", e);
+        }
     }
 
     @Override
