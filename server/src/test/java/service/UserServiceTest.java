@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import exceptions.Exceptions;
@@ -30,7 +31,7 @@ class UserServiceTest {
     }
 
     @Test
-    void registerNewUser() {
+    void registerNewUser() throws DataAccessException {
         var newAuth = service.register(nonexistentUser);
 
         var added = userDAO.find(nonexistentUser.username());
@@ -45,14 +46,14 @@ class UserServiceTest {
     }
 
     @Test
-    void registerExistingUser() {
+    void registerExistingUser() throws DataAccessException {
         assertThrows(Exceptions.AlreadyTakenException.class, () -> {
             service.register(existingUser);
         });
     }
 
     @Test
-    void loginExistingUser() {
+    void loginExistingUser() throws DataAccessException {
         String encryptedPassword = BCrypt.hashpw("wow", BCrypt.gensalt());
         boolean doPasswordsMatch = BCrypt.checkpw("wow", encryptedPassword);
 
@@ -67,14 +68,14 @@ class UserServiceTest {
     }
 
     @Test
-    void loginNonExistingUser() {
+    void loginNonExistingUser() throws DataAccessException {
         assertThrows(Exceptions.NotAuthorizedException.class, () -> {
             service.login(new UserService.LoginRequest(nonexistentUser.username(), nonexistentUser.password()));
         });
     }
 
     @Test
-    void loginTwice() {
+    void loginTwice() throws DataAccessException {
         var loginRequest = new UserService.LoginRequest(existingUser.username(), existingUser.password());
         var authOne = service.login(loginRequest);
         var authTwo = service.login(loginRequest);
@@ -83,7 +84,7 @@ class UserServiceTest {
     }
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
         userDAO.add(nonexistentUser);
         service.clear();
         assertEquals(0, userDAO.records.size());

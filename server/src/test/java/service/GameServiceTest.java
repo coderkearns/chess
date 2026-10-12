@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import exceptions.Exceptions;
@@ -29,7 +30,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames() {
+    void listGames() throws DataAccessException {
         var games = service.listGames();
         assertEquals(1, games.games().size());
         var gameResponse = (GameService.GameResponse) games.games().toArray()[0];
@@ -40,7 +41,7 @@ class GameServiceTest {
     }
 
     @Test
-    void newGame() {
+    void newGame() throws DataAccessException {
         var newGameResponse = service.newGame(new GameService.NewGameRequest("my new game"));
         assertEquals(1, newGameResponse.gameID());
         var gameData = gameDAO.find(newGameResponse.gameID());
@@ -53,28 +54,28 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGameEmptySpace() {
+    void joinGameEmptySpace() throws DataAccessException {
         service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("BLACK", 0));
         var game = gameDAO.find(0);
         assertEquals(game.blackUsername(), existingAuth.username());
     }
 
     @Test
-    void joinGameTaken() {
+    void joinGameTaken() throws DataAccessException {
         assertThrows(Exceptions.AlreadyTakenException.class, () -> {
             service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", 0));
         });
     }
 
     @Test
-    void joinNonExistentGame() {
+    void joinNonExistentGame() throws DataAccessException {
         assertThrows(Exceptions.BadRequestException.class, () -> {
             service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", 1));
         });
     }
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
         gameDAO.add(new GameData(1, null, null, "name", null));
         service.clear();
         assertEquals(0, gameDAO.records.size());

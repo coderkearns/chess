@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import exceptions.Exceptions;
 import model.GameData;
@@ -41,7 +42,7 @@ public class GameService {
 
     /* --- Methods --- */
 
-    public ListGamesResponse listGames() {
+    public ListGamesResponse listGames() throws DataAccessException {
         var games = new ArrayList<GameResponse>();
 
         for (var game : gameDAO.getAll()) {
@@ -51,13 +52,13 @@ public class GameService {
         return new ListGamesResponse(games);
     }
 
-    public NewGameResponse newGame(NewGameRequest req) {
+    public NewGameResponse newGame(NewGameRequest req) throws DataAccessException {
         var newGame = new GameData(nextGameID++, null, null, req.gameName(), new ChessGame());
         gameDAO.add(newGame);
         return new NewGameResponse(newGame.gameID());
     }
 
-    public void joinGame(String authToken, JoinGameRequest req) {
+    public void joinGame(String authToken, JoinGameRequest req) throws DataAccessException {
         if (!Objects.equals(req.playerColor(), "WHITE") && !Objects.equals(req.playerColor(), "BLACK")) {
             throw new Exceptions.BadRequestException();
         }
@@ -80,7 +81,7 @@ public class GameService {
         gameDAO.setGame(new GameData(game.gameID(), newWhiteUsername, newBlackUsername, game.gameName(), game.game()));
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         gameDAO.clear();
     }
 }

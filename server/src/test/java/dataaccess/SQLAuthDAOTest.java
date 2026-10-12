@@ -1,21 +1,35 @@
 package dataaccess;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import model.AuthData;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLAuthDAOTest {
 
-    @BeforeEach
-    void setUp() {
+
+    private AuthDAO getDataAccess(Class<? extends AuthDAO> databaseClass) throws DataAccessException {
+        AuthDAO db;
+        if (databaseClass.equals(SQLAuthDAO.class)) {
+            db = new SQLAuthDAO();
+        } else {
+            db = new MemoryAuthDAO();
+        }
+        db.clear();
+        return db;
     }
 
-    @AfterEach
-    void tearDown() {
-    }
+    @ParameterizedTest
+    @ValueSource(classes = {SQLAuthDAO.class, MemoryAuthDAO.class})
+    void add(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+        AuthDAO dao = getDataAccess(dbClass);
 
-    @Test
-    void add() {
+        AuthData auth = new AuthData("token", "username");
+        boolean added = dao.add(auth);
+
+        assertTrue(added);
     }
 
     @Test

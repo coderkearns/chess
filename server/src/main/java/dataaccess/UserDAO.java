@@ -6,15 +6,15 @@ public interface UserDAO {
     /**
      * Stores a new user in the data layer. Returns true if they were added successfully, or false if they already exist.
      */
-    boolean add(UserData user);
-    
+    boolean add(UserData user) throws DataAccessException;
+
     /**
      * Finds a user with a specified username, or returns null if none exists.
      */
-    public UserData find(String username);
+    public UserData find(String username) throws DataAccessException;
 
     /**
      * Wipes all users from the data layer.
      */
-    void clear();
+    void clear() throws DataAccessException;
 }

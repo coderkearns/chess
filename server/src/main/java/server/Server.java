@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import exceptions.Exceptions;
 import io.javalin.Javalin;
 import service.AuthService;
@@ -14,9 +12,20 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        var authDAO = new MemoryAuthDAO();
-        var gameDAO = new MemoryGameDAO();
-        var userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = null;
+        GameDAO gameDAO = null;
+        UserDAO userDAO = null;
+
+        try {
+            authDAO = new SQLAuthDAO();
+            gameDAO = new MemoryGameDAO();
+            userDAO = new MemoryUserDAO();
+        } catch (DataAccessException e) {
+            System.err.println(e);
+            System.err.println("Error accessing database during setup");
+            javalin = null;
+            return;
+        }
 
         var authService = new AuthService(authDAO);
         var gameService = new GameService(authDAO, gameDAO);
@@ -36,6 +45,7 @@ public class Server {
                 .exception(Exceptions.NotAuthorizedException.class, handlers::handleNotAuthorizedException)
                 .exception(Exceptions.AlreadyTakenException.class, handlers::handleAlreadyTakenException)
                 .exception(Exceptions.NotFoundException.class, handlers::handleNotFoundException)
+                .exception(DataAccessException.class, handlers::handleDataAccessException)
                 .exception(RuntimeException.class, handlers::handleGenericException);
     }
 

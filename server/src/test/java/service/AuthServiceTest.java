@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import exceptions.Exceptions;
 import model.AuthData;
@@ -36,7 +37,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void verify() {
+    void verify() throws DataAccessException {
         assertEquals(existingAuth.authToken(), service.verify(existingAuth.authToken()));
         assertThrows(Exceptions.NotAuthorizedException.class, () -> {
             service.verify(nonexistentAuth.authToken());
@@ -44,13 +45,13 @@ class AuthServiceTest {
     }
 
     @Test
-    void deleteAuth() {
+    void deleteAuth() throws DataAccessException {
         service.deleteAuth(existingAuth.authToken());
         assertEquals(0, dao.records.size());
     }
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
         dao.add(nonexistentAuth);
         service.clear();
         assertEquals(0, dao.records.size());

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exceptions.Exceptions.AlreadyTakenException;
 import exceptions.Exceptions.NotAuthorizedException;
@@ -35,7 +36,7 @@ public class UserService {
 
     /* --- Methods --- */
 
-    public AuthData register(UserData req) {
+    public AuthData register(UserData req) throws DataAccessException {
         var existingUser = userDAO.find(req.username());
         if (existingUser != null) {
             throw new AlreadyTakenException();
@@ -48,7 +49,7 @@ public class UserService {
         return auth;
     }
 
-    public AuthData login(LoginRequest req) {
+    public AuthData login(LoginRequest req) throws DataAccessException {
         var existingUser = userDAO.find(req.username());
         if (existingUser == null) {
             throw new NotAuthorizedException();
@@ -63,7 +64,7 @@ public class UserService {
     }
 
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.clear();
     }
 }
