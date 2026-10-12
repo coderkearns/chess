@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLAuthDAOTest {
@@ -33,18 +34,25 @@ class SQLAuthDAOTest {
     }
 
     @Test
-    void tokenExists() {
+    void tokenExists() throws DataAccessException {
     }
 
     @Test
-    void getUsername() {
+    void getUsername() throws DataAccessException {
     }
 
     @Test
-    void delete() {
+    void delete() throws DataAccessException {
     }
 
-    @Test
-    void clear() {
+    @ParameterizedTest
+    @ValueSource(classes = {SQLAuthDAO.class, MemoryAuthDAO.class})
+    void clear(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+        AuthDAO dao = getDataAccess(dbClass);
+
+        dao.add(new AuthData("token1", "username1"));
+        dao.add(new AuthData("token2", "username2"));
+
+        assertDoesNotThrow(dao::clear);
     }
 }

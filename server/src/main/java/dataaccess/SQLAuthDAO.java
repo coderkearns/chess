@@ -26,23 +26,29 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public boolean tokenExists(AuthData auth) {
+    public boolean tokenExists(AuthData auth) throws DataAccessException {
         return false;
     }
 
     @Override
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws DataAccessException {
         return "";
     }
 
     @Override
-    public boolean delete(AuthData auth) {
+    public boolean delete(AuthData auth) throws DataAccessException {
         return false;
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE auth")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("clearing auth failed", e);
+        }
     }
 
     public final String[] createStatements = {
