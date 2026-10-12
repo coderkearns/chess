@@ -6,8 +6,8 @@ import exceptions.Exceptions.AlreadyTakenException;
 import exceptions.Exceptions.NotAuthorizedException;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -40,15 +40,21 @@ public class UserService {
         if (existingUser != null) {
             throw new AlreadyTakenException();
         }
-        userDAO.add(req);
-        var auth = generateAuth(req);
+        String encryptedPassword = BCrypt.hashpw(req.password(), BCrypt.gensalt());
+        UserData encryptedUser = new UserData(req.username(), encryptedPassword, req.email());
+        userDAO.add(encryptedUser);
+        var auth = generateAuth(encryptedUser);
         authDAO.add(auth);
         return auth;
     }
 
     public AuthData login(LoginRequest req) {
         var existingUser = userDAO.find(req.username());
-        if (existingUser == null || !Objects.equals(req.password(), existingUser.password())) {
+        if (existingUser == null) {
+            throw new NotAuthorizedException();
+        }
+        boolean doPasswordsMatch = BCrypt.checkpw(req.password(), existingUser.password());
+        if (!doPasswordsMatch) {
             throw new NotAuthorizedException();
         }
         var auth = generateAuth(existingUser);

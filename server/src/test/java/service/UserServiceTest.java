@@ -7,6 +7,7 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +25,7 @@ class UserServiceTest {
     void setUp() {
         authDAO = new MemoryAuthDAO();
         userDAO = new MemoryUserDAO();
-        userDAO.add(existingUser);
+        userDAO.add(new UserData(existingUser.username(), BCrypt.hashpw(existingUser.password(), BCrypt.gensalt()), existingUser.email()));
         service = new UserService(userDAO, authDAO);
     }
 
@@ -32,7 +33,10 @@ class UserServiceTest {
     void registerNewUser() {
         var newAuth = service.register(nonexistentUser);
 
-        assertEquals(nonexistentUser, userDAO.find(nonexistentUser.username()));
+        var added = userDAO.find(nonexistentUser.username());
+        assertEquals(nonexistentUser.username(), added.username());
+        assertEquals(nonexistentUser.email(), added.email());
+        assertTrue(BCrypt.checkpw(nonexistentUser.password(), added.password()), "Passwords should be hashed with bcrypt");
 
         assertEquals(nonexistentUser.username(), newAuth.username());
         assertNotNull(newAuth.authToken());
@@ -49,6 +53,11 @@ class UserServiceTest {
 
     @Test
     void loginExistingUser() {
+        String encryptedPassword = BCrypt.hashpw("wow", BCrypt.gensalt());
+        boolean doPasswordsMatch = BCrypt.checkpw("wow", encryptedPassword);
+
+        assertTrue(doPasswordsMatch);
+
         var newAuth = service.login(new UserService.LoginRequest(existingUser.username(), existingUser.password()));
 
         assertEquals(existingUser.username(), newAuth.username());
