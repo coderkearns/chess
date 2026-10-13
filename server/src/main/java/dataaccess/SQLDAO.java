@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public abstract class SQLDAO {
     @FunctionalInterface
     protected interface DBConnectionAction<T> {
-        T action(Connection conn) throws SQLException;
+        T action(Connection conn) throws SQLException, DataAccessException;
     }
 
     protected <T> T withConnection(DBConnectionAction<T> action) throws DataAccessException {

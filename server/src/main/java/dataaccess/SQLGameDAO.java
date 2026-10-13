@@ -66,7 +66,7 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
                     return new GameData(
                             gameID,
                             resultSet.getString("white_username"),
-                            resultSet.getString("white_username"),
+                            resultSet.getString("black_username"),
                             resultSet.getString("name"),
                             gson.fromJson(resultSet.getString("game_json"), ChessGame.class)
                     );
@@ -79,7 +79,24 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public void setGame(GameData game) throws DataAccessException {
+        withConnection(conn -> {
+            try (var preparedStatement = conn.prepareStatement(
+                    "UPDATE games SET white_username = ?, black_username = ?, name = ?, game_json = ? WHERE id = ?"
+            )) {
+                preparedStatement.setString(1, game.whiteUsername());
+                preparedStatement.setString(2, game.blackUsername());
+                preparedStatement.setString(3, game.gameName());
+                preparedStatement.setString(4, gson.toJson(game.game()));
+                preparedStatement.setInt(5, game.gameID());
+                preparedStatement.executeUpdate();
 
+                var changedRows = preparedStatement.getUpdateCount();
+                if (changedRows != 1) {
+                    throw new DataAccessException("game not updated in database");
+                }
+                return null;
+            }
+        });
     }
 
     @Override
