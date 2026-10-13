@@ -1,7 +1,11 @@
 package dataaccess;
 
+import chess.ChessGame;
+import model.GameData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLGameDAOTest {
     private GameDAO getDataAccess(Class<? extends GameDAO> daoClass) throws DataAccessException {
@@ -20,6 +24,10 @@ class SQLGameDAOTest {
     void add(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var game = new GameData(-1, null, null, "my_game", new ChessGame());
+        var addedGame = dao.add(game);
+
+        assertTrue(addedGame.gameID() > 0);
     }
 
     @ParameterizedTest
