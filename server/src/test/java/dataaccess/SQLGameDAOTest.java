@@ -113,6 +113,11 @@ class SQLGameDAOTest {
     void deleteSuccessfully(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var game = dao.add(new GameData(-1, null, null, "my_game", new ChessGame()));
+
+        boolean deleted = dao.delete(game);
+
+        assertTrue(deleted);
     }
 
     @ParameterizedTest
@@ -120,6 +125,10 @@ class SQLGameDAOTest {
     void deleteMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var nonexistentGame = new GameData(-1, null, null, "my_game", new ChessGame());
+        boolean deleted = dao.delete(nonexistentGame);
+
+        assertFalse(deleted);
     }
 
     @ParameterizedTest

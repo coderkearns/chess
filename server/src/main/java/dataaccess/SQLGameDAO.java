@@ -125,7 +125,14 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public boolean delete(GameData game) throws DataAccessException {
-        return false;
+        return withConnection(conn -> {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM games WHERE id = ?")) {
+                preparedStatement.setInt(1, game.gameID());
+                preparedStatement.executeUpdate();
+                var changedRows = preparedStatement.getUpdateCount();
+                return changedRows == 1;
+            }
+        });
     }
 
     @Override
