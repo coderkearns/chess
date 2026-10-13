@@ -59,6 +59,18 @@ class SQLGameDAOTest {
     void setGame(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var chessGame = new ChessGame();
+        var insertedGame = dao.add(new GameData(-1, null, null, "my_game", chessGame));
+        chessGame.setTeamTurn(ChessGame.TeamColor.BLACK);
+
+        var newGame = new GameData(insertedGame.gameID(), "john_doe", null, "my_game", chessGame);
+        dao.setGame(newGame);
+
+        var persistedGame = dao.find(insertedGame.gameID());
+
+        assertEquals(ChessGame.TeamColor.BLACK, persistedGame.game().getTeamTurn());
+        assertEquals("john_doe", persistedGame.whiteUsername());
+        assertNull(persistedGame.blackUsername());
     }
 
     @ParameterizedTest
