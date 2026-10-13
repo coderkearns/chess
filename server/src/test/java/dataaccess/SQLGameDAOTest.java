@@ -24,7 +24,14 @@ class SQLGameDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
-    void find(Class<? extends GameDAO> daoClass) throws DataAccessException {
+    void findSuccessfully(Class<? extends GameDAO> daoClass) throws DataAccessException {
+        GameDAO dao = getDataAccess(daoClass);
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
+    void findMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
     }
@@ -38,6 +45,21 @@ class SQLGameDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
+    void setGameMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
+        GameDAO dao = getDataAccess(daoClass);
+
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
+    void getAllEmpty(Class<? extends GameDAO> daoClass) throws DataAccessException {
+        GameDAO dao = getDataAccess(daoClass);
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
     void getAll(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
@@ -45,7 +67,14 @@ class SQLGameDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
-    void delete(Class<? extends GameDAO> daoClass) throws DataAccessException {
+    void deleteSuccessfully(Class<? extends GameDAO> daoClass) throws DataAccessException {
+        GameDAO dao = getDataAccess(daoClass);
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
+    void deleteMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
     }
