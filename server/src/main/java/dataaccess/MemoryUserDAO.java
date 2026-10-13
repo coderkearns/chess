@@ -2,27 +2,24 @@ package dataaccess;
 
 import model.UserData;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.HashMap;
 
 public class MemoryUserDAO implements UserDAO {
-    public final Set<UserData> records = new HashSet<UserData>();
+    public final HashMap<String, UserData> records = new HashMap<String, UserData>();
 
     public MemoryUserDAO() {
     }
 
     public boolean add(UserData user) {
-        return records.add(user);
-    }
-    
-    public UserData find(String username) {
-        for (var record : records) {
-            if (Objects.equals(record.username(), username)) {
-                return record;
-            }
+        if (records.containsKey(user.username())) {
+            return false;
         }
-        return null;
+        records.put(user.username(), user);
+        return true;
+    }
+
+    public UserData find(String username) {
+        return records.get(username);
     }
 
     public void clear() {

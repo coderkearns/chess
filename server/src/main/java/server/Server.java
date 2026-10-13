@@ -19,7 +19,7 @@ public class Server {
         try {
             authDAO = new SQLAuthDAO();
             gameDAO = new MemoryGameDAO();
-            userDAO = new MemoryUserDAO();
+            userDAO = new SQLUserDAO();
         } catch (DataAccessException e) {
             System.err.println(e);
             System.err.println("Error accessing database during setup");

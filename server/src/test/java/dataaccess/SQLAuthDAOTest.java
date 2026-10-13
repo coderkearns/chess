@@ -10,14 +10,14 @@ class SQLAuthDAOTest {
 
 
     private AuthDAO getDataAccess(Class<? extends AuthDAO> databaseClass) throws DataAccessException {
-        AuthDAO db;
+        AuthDAO dao;
         if (databaseClass.equals(SQLAuthDAO.class)) {
-            db = new SQLAuthDAO();
+            dao = new SQLAuthDAO();
         } else {
-            db = new MemoryAuthDAO();
+            dao = new MemoryAuthDAO();
         }
-        db.clear();
-        return db;
+        dao.clear();
+        return dao;
     }
 
     @ParameterizedTest
