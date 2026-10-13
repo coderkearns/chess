@@ -5,7 +5,7 @@ import model.GameData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SQLGameDAOTest {
     private GameDAO getDataAccess(Class<? extends GameDAO> daoClass) throws DataAccessException {
@@ -35,6 +35,10 @@ class SQLGameDAOTest {
     void findSuccessfully(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var expectedGame = dao.add(new GameData(-1, null, null, "my_game", new ChessGame()););
+        var actualGame = dao.find(expectedGame.gameID());
+
+        assertEquals(expectedGame, actualGame);
     }
 
     @ParameterizedTest
@@ -42,13 +46,16 @@ class SQLGameDAOTest {
     void findMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var actualGame = dao.find(-1);
+
+        assertNull(actualGame);
     }
 
     @ParameterizedTest
     @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
     void setGame(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
-
+        
     }
 
     @ParameterizedTest
