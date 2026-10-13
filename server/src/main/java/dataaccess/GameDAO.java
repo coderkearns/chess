@@ -6,9 +6,9 @@ import java.util.Collection;
 
 public interface GameDAO {
     /**
-     * Stores a new game in the data layer. Returns true if it was added successfully, or false if it already exists.
+     * Stores a new game in the data layer. Returns new game with a generated ID.
      */
-    boolean add(GameData game) throws DataAccessException;
+    GameData add(GameData game) throws DataAccessException;
 
     /**
      * Finds the specified game, or null if it doesn't exist.

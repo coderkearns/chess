@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
+    private int nextID = 1;
+
     public final Map<Integer, GameData> records = new HashMap<Integer, GameData>();
 
     public MemoryGameDAO() {
     }
 
-    public boolean add(GameData game) {
-        if (records.containsKey(game.gameID())) {
-            return false;
-        }
-        records.put(game.gameID(), game);
-        return true;
+    public GameData add(GameData game) {
+        var newGame = new GameData(nextID++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+        records.put(newGame.gameID(), newGame);
+        return newGame;
     }
 
     public void setGame(GameData game) {

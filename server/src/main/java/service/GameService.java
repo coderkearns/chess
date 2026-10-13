@@ -15,12 +15,9 @@ public class GameService {
     final GameDAO gameDAO;
     final AuthDAO authDAO;
 
-    private int nextGameID;
-
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
-        nextGameID = 1;
     }
 
     /* --- DTOs --- */
@@ -53,8 +50,8 @@ public class GameService {
     }
 
     public NewGameResponse newGame(NewGameRequest req) throws DataAccessException {
-        var newGame = new GameData(nextGameID++, null, null, req.gameName(), new ChessGame());
-        gameDAO.add(newGame);
+        var newGame = new GameData(-1, null, null, req.gameName(), new ChessGame());
+        newGame = gameDAO.add(newGame);
         return new NewGameResponse(newGame.gameID());
     }
 
