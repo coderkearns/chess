@@ -89,6 +89,9 @@ class SQLGameDAOTest {
     void getAllEmpty(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var games = dao.getAll();
+
+        assertEquals(0, games.size());
     }
 
     @ParameterizedTest
@@ -96,6 +99,13 @@ class SQLGameDAOTest {
     void getAll(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        dao.add(new GameData(-1, null, null, "game_1", new ChessGame()));
+        dao.add(new GameData(-1, null, null, "game_2", new ChessGame()));
+
+        var games = dao.getAll();
+
+        assertEquals(2, games.size());
+        assertEquals(6, ((GameData) games.toArray()[0]).gameName().length());
     }
 
     @ParameterizedTest
@@ -117,5 +127,10 @@ class SQLGameDAOTest {
     void clear(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        dao.add(new GameData(-1, null, null, "game_1", new ChessGame()));
+        dao.add(new GameData(-1, null, null, "game_2", new ChessGame()));
+
+        assertDoesNotThrow(dao::clear);
+        assertEquals(0, dao.getAll().size());
     }
 }

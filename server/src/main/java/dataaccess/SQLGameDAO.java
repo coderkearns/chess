@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -101,7 +102,25 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public Collection<GameData> getAll() throws DataAccessException {
-        return List.of();
+        return withConnection(conn -> {
+            try (var preparedStatement = conn.prepareStatement(
+                    "SELECT id, name, white_username, black_username, game_json FROM games"
+            )) {
+                try (var resultSet = preparedStatement.executeQuery()) {
+                    List<GameData> games = new ArrayList<>();
+                    while (resultSet.next()) {
+                        games.add(new GameData(
+                                resultSet.getInt("id"),
+                                resultSet.getString("white_username"),
+                                resultSet.getString("black_username"),
+                                resultSet.getString("name"),
+                                gson.fromJson(resultSet.getString("game_json"), ChessGame.class)
+                        ));
+                    }
+                    return games;
+                }
+            }
+        });
     }
 
     @Override
@@ -111,6 +130,11 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public void clear() throws DataAccessException {
-
+        withConnection(conn -> {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE games")) {
+                preparedStatement.executeUpdate();
+            }
+            return null;
+        });
     }
 }
