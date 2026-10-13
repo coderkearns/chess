@@ -78,6 +78,9 @@ class SQLGameDAOTest {
     void setGameMissing(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
+        var nonexistentGame = new GameData(-1, "john_doe", null, "my_game", new ChessGame());
+
+        assertThrows(DataAccessException.class, () -> dao.setGame(nonexistentGame));
     }
 
 
