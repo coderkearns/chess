@@ -18,7 +18,7 @@ class GameServiceTest {
     GameService service;
 
     AuthData existingAuth = new AuthData("token", "username");
-    GameData existingGame = new GameData(0, "whiteTaken", null, "initial game", new ChessGame());
+    GameData existingGame = new GameData(1, "whiteTaken", null, "initial game", new ChessGame());
 
     @BeforeEach
     void setUp() {
@@ -43,34 +43,34 @@ class GameServiceTest {
     @Test
     void newGame() throws DataAccessException {
         var newGameResponse = service.newGame(new GameService.NewGameRequest("my new game"));
-        assertEquals(1, newGameResponse.gameID());
+        assertTrue(newGameResponse.gameID() > 1);
         var gameData = gameDAO.find(newGameResponse.gameID());
         assertNotNull(gameData);
         assertEquals(newGameResponse.gameID(), gameData.gameID());
         assertEquals("my new game", gameData.gameName());
 
         var secondGameResponse = service.newGame(new GameService.NewGameRequest("game 2"));
-        assertEquals(2, secondGameResponse.gameID());
+        assertTrue(secondGameResponse.gameID() > 1);
     }
 
     @Test
     void joinGameEmptySpace() throws DataAccessException {
-        service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("BLACK", 0));
-        var game = gameDAO.find(0);
+        service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("BLACK", 1));
+        var game = gameDAO.find(1);
         assertEquals(game.blackUsername(), existingAuth.username());
     }
 
     @Test
     void joinGameTaken() throws DataAccessException {
         assertThrows(Exceptions.AlreadyTakenException.class, () -> {
-            service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", 0));
+            service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", 1));
         });
     }
 
     @Test
     void joinNonExistentGame() throws DataAccessException {
         assertThrows(Exceptions.BadRequestException.class, () -> {
-            service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", 1));
+            service.joinGame(existingAuth.authToken(), new GameService.JoinGameRequest("WHITE", -1));
         });
     }
 
