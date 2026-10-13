@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/SQLAuthDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
-    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/SQLGameDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
-    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/SQLUserDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/sql/SQLAuthDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/sql/SQLGameDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/dataaccess/sql/SQLUserDAO.java" value="aceb59e4-2357-4ce4-aeb5-1345096d353c" />
   </component>
 </project>

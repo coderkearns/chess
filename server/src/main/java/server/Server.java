@@ -1,6 +1,12 @@
 package server;
 
-import dataaccess.*;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
+import dataaccess.sql.SQLAuthDAO;
+import dataaccess.sql.SQLGameDAO;
+import dataaccess.sql.SQLUserDAO;
 import exceptions.Exceptions;
 import io.javalin.Javalin;
 import service.AuthService;

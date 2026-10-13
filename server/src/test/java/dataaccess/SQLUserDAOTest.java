@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.sql.SQLUserDAO;
 import model.UserData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
