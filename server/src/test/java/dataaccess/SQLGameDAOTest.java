@@ -35,10 +35,13 @@ class SQLGameDAOTest {
     void findSuccessfully(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
 
-        var expectedGame = dao.add(new GameData(-1, null, null, "my_game", new ChessGame()););
+        var chessGame = new ChessGame();
+        chessGame.setTeamTurn(ChessGame.TeamColor.BLACK);
+        var expectedGame = dao.add(new GameData(-1, null, null, "my_game", chessGame));
         var actualGame = dao.find(expectedGame.gameID());
 
         assertEquals(expectedGame, actualGame);
+        assertEquals(ChessGame.TeamColor.BLACK, actualGame.game().getTeamTurn(), "game json not encoded properly");
     }
 
     @ParameterizedTest
@@ -55,7 +58,7 @@ class SQLGameDAOTest {
     @ValueSource(classes = {SQLGameDAO.class, MemoryGameDAO.class})
     void setGame(Class<? extends GameDAO> daoClass) throws DataAccessException {
         GameDAO dao = getDataAccess(daoClass);
-        
+
     }
 
     @ParameterizedTest

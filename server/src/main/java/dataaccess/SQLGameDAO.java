@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
@@ -57,7 +58,23 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public GameData find(int gameID) throws DataAccessException {
-        return null;
+        return withConnection(conn -> {
+            try (var preparedStatement = conn.prepareStatement("SELECT name, white_username, black_username, game_json FROM games WHERE id = ?")) {
+                preparedStatement.setInt(1, gameID);
+                var resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return new GameData(
+                            gameID,
+                            resultSet.getString("white_username"),
+                            resultSet.getString("white_username"),
+                            resultSet.getString("name"),
+                            gson.fromJson(resultSet.getString("game_json"), ChessGame.class)
+                    );
+                } else {
+                    return null;
+                }
+            }
+        });
     }
 
     @Override
