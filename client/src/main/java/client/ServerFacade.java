@@ -10,6 +10,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
@@ -23,7 +25,7 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    private static record AuthResponse(String username, String authToken) {
+    private record AuthResponse(String username, String authToken) {
     }
 
     public String register(String username, String password, String email) throws Exceptions.ServerErrorException {
@@ -65,6 +67,23 @@ public class ServerFacade {
         var loginResponse = gson.fromJson(res.body(), AuthResponse.class);
         if (loginResponse.authToken() == null) throw new Exceptions.ServerErrorException();
         return loginResponse.authToken();
+    }
+
+    public void logout(String authToken) throws Exceptions.ServerErrorException {
+    }
+
+    public static record GameResponse(int gameID, String whiteUsername, String blackUsername, String gameName) {
+    }
+
+    public Collection<GameResponse> listGames(String authToken) throws Exceptions.ServerErrorException {
+        return List.of();
+    }
+
+    public int createGame(String authToken, String gameName) throws Exceptions.ServerErrorException {
+        return 0;
+    }
+
+    public void joinGame(String authToken, String playerColor, String gameID) throws Exceptions.ServerErrorException {
     }
 
     public void clear() throws Exceptions.ServerErrorException {
