@@ -1,11 +1,12 @@
 package client;
 
+import exceptions.Exceptions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import server.Server;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -30,12 +31,16 @@ public class ServerFacadeTests {
 
     @Test
     public void register() {
+        String authToken = facade.register("john", "wowcool", "john@example.com");
 
+        assertTrue(authToken.length() > 1);
     }
 
     @Test
     public void registerAlreadyExists() {
+        facade.register("john", "wowcool", "john@example.com");
 
+        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.register("john", "wowcool", "john@example.com"));
     }
 
     @Test
