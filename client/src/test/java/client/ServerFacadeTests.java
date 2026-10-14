@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import server.Server;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 
 public class ServerFacadeTests {
 
@@ -12,11 +14,12 @@ public class ServerFacadeTests {
     private static ServerFacade facade;
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws Exception {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("localhost:" + port);
+        facade = new ServerFacade("http://localhost:" + port);
+        facade.clear();
     }
 
     @AfterAll
@@ -92,6 +95,6 @@ public class ServerFacadeTests {
 
     @Test
     public void clear() {
-
+        assertDoesNotThrow(() -> facade.clear());
     }
 }
