@@ -1,5 +1,7 @@
 package client;
 
+import exceptions.Exceptions;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -25,7 +27,7 @@ public class ServerFacade {
         var res = client.send(req, HttpResponse.BodyHandlers.ofString());
 
         if (res.statusCode() != 200) {
-            throw new Exception("clear failed");
+            throw new Exceptions.ServerErrorException();
         }
     }
 
