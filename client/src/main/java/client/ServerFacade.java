@@ -23,6 +23,9 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    private static record AuthResponse(String username, String authToken) {
+    }
+
     public String register(String username, String password, String email) throws Exceptions.ServerErrorException {
         var res = sendRequest(
                 "/user",
@@ -39,12 +42,9 @@ public class ServerFacade {
             throw new Exceptions.AlreadyTakenException();
         }
 
-        var registerResponse = gson.fromJson(res.body(), Map.class);
-        String authToken = (String) registerResponse.get("authToken");
-
-        if (authToken == null) throw new Exceptions.ServerErrorException();
-
-        return authToken;
+        var registerResponse = gson.fromJson(res.body(), AuthResponse.class);
+        if (registerResponse.authToken() == null) throw new Exceptions.ServerErrorException();
+        return registerResponse.authToken();
     }
 
     public String login(String username, String password) throws Exceptions.ServerErrorException {
@@ -62,12 +62,9 @@ public class ServerFacade {
             throw new Exceptions.NotAuthorizedException();
         }
 
-        var registerResponse = gson.fromJson(res.body(), Map.class);
-        String authToken = (String) registerResponse.get("authToken");
-
-        if (authToken == null) throw new Exceptions.ServerErrorException();
-
-        return authToken;
+        var loginResponse = gson.fromJson(res.body(), AuthResponse.class);
+        if (loginResponse.authToken() == null) throw new Exceptions.ServerErrorException();
+        return loginResponse.authToken();
     }
 
     public void clear() throws Exceptions.ServerErrorException {

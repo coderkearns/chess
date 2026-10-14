@@ -1,10 +1,16 @@
 package client;
 
+import com.google.gson.Gson;
 import exceptions.Exceptions;
+import model.UserData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.Server;
+
+import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +26,11 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
+        facade.clear();
+    }
+
+    @BeforeEach
+    public void beforeEach() {
         facade.clear();
     }
 
@@ -53,7 +64,7 @@ public class ServerFacadeTests {
 
     @Test
     public void loginNotAuthorized() {
-
+        Map<String, Collection<UserData>> m = new Gson().fromJson("{\"games\": [{\"username\":\"john\",\"email\":\"email@example.com\",\"password\":\"cool\"}]}", Map.class);
     }
 
     @Test
