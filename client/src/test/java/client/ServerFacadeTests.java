@@ -45,7 +45,10 @@ public class ServerFacadeTests {
 
     @Test
     public void login() {
+        facade.register("john", "wowcool", "john@example.com");
+        String authToken = facade.login("john", "wowcool");
 
+        assertTrue(authToken.length() > 1);
     }
 
     @Test

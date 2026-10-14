@@ -47,6 +47,29 @@ public class ServerFacade {
         return authToken;
     }
 
+    public String login(String username, String password) throws Exceptions.ServerErrorException {
+        var res = sendRequest(
+                "/session",
+                req -> req.POST(HttpRequest.BodyPublishers.ofString(gson.toJson(Map.of(
+                        "username", username,
+                        "password", password
+                )))).header("Content-Type", "application/json"),
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        if (res.statusCode() != 200) {
+            if (res.statusCode() != 401) throw new Exceptions.ServerErrorException();
+            throw new Exceptions.NotAuthorizedException();
+        }
+
+        var registerResponse = gson.fromJson(res.body(), Map.class);
+        String authToken = (String) registerResponse.get("authToken");
+
+        if (authToken == null) throw new Exceptions.ServerErrorException();
+
+        return authToken;
+    }
+
     public void clear() throws Exceptions.ServerErrorException {
         var res = sendRequest("/db", req -> req.DELETE(), HttpResponse.BodyHandlers.ofString());
 
