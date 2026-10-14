@@ -35,6 +35,11 @@ public class Repl {
                 command = new ReplCommands.InvalidCommand(commandName);
             }
 
+            System.out.println(command.allowedStates);
+            if (!command.allowedStates.contains(state)) {
+                command = new ReplCommands.WrongStateCommand(commandName);
+            }
+
             state = command.execute(ui, state, context);
         }
     }
