@@ -17,6 +17,6 @@ public class ConsoleUI implements UI {
     @Override
     public String getCommand(String currentState) {
         System.out.printf("[%s] >>> ", currentState);
-        return scanner.nextLine();
+        return scanner.nextLine().toLowerCase();
     }
 }

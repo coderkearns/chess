@@ -25,7 +25,7 @@ public class Repl {
     public void run() {
         initializeState();
 
-        ui.print("Intro");
+        ui.print("♕ Welcome to CS 240 Chess Client. Type Help for help. ♕");
 
         while (state != State.QUIT) {
             var commandName = ui.getCommand(state.toString());
