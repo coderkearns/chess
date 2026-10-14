@@ -1,18 +1,22 @@
 package client;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import server.Server;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    private static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("localhost:" + port);
     }
 
     @AfterAll
@@ -22,8 +26,72 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void register() {
+
     }
 
+    @Test
+    public void registerAlreadyExists() {
+
+    }
+
+    @Test
+    public void login() {
+
+    }
+
+    @Test
+    public void loginNotAuthorized() {
+
+    }
+
+    @Test
+    public void logout() {
+
+    }
+
+    @Test
+    public void logoutNotSignedIn() {
+
+    }
+
+    @Test
+    public void listGames() {
+
+    }
+
+    @Test
+    public void createGame() {
+
+    }
+
+    @Test
+    public void createGameNotAuthorized() {
+
+    }
+
+    @Test
+    public void joinGame() {
+
+    }
+
+    @Test
+    public void joinGameNotAuthorized() {
+
+    }
+
+    @Test
+    public void joinGameNotExist() {
+
+    }
+
+    @Test
+    public void joinGameColorTaken() {
+
+    }
+
+    @Test
+    public void clear() {
+
+    }
 }
