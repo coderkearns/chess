@@ -35,8 +35,7 @@ public class Repl {
                 command = new ReplCommands.InvalidCommand(commandName);
             }
 
-            System.out.println(command.allowedStates);
-            if (!command.allowedStates.contains(state)) {
+            if (!command.getAllowedStates().contains(state)) {
                 command = new ReplCommands.WrongStateCommand(commandName);
             }
 

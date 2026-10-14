@@ -7,7 +7,9 @@ import java.util.Set;
 
 public class ReplCommands {
     public static abstract class Command {
-        public Set<Repl.State> allowedStates = Set.of();
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT);
+        }
 
         public abstract Repl.State execute(UI ui, Repl.State state, Repl.Context context);
     }
@@ -21,8 +23,6 @@ public class ReplCommands {
     // ----- COMMANDS -----
 
     private static class Quit extends Command {
-        public Set<Repl.State> allowedStates = Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT);
-
         public Repl.State execute(UI ui, Repl.State state, Repl.Context context) {
             ui.print("Bye!");
             return Repl.State.QUIT;
@@ -30,11 +30,9 @@ public class ReplCommands {
     }
 
     private static class Help extends Command {
-        public Set<Repl.State> allowedStates = Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT);
-
         public Repl.State execute(UI ui, Repl.State state, Repl.Context context) {
             for (var cmd : commandMap.entrySet()) {
-                if (!cmd.getValue().allowedStates.contains(state)) {
+                if (!cmd.getValue().getAllowedStates().contains(state)) {
                     continue;
                 }
 
@@ -45,7 +43,9 @@ public class ReplCommands {
     }
 
     private static class Login extends Command {
-        public Set<Repl.State> allowedStates = Set.of(Repl.State.LOGGED_OUT);
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_OUT);
+        }
 
         public Repl.State execute(UI ui, Repl.State state, Repl.Context context) {
             ui.print("Logging in!");
