@@ -83,7 +83,7 @@ public class ServerFacade {
         return 0;
     }
 
-    public void joinGame(String authToken, String playerColor, String gameID) throws Exceptions.ServerErrorException {
+    public void joinGame(String authToken, String playerColor, int gameID) throws Exceptions.ServerErrorException {
     }
 
     public void clear() throws Exceptions.ServerErrorException {

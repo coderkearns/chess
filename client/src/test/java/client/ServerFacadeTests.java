@@ -1,16 +1,13 @@
 package client;
 
-import com.google.gson.Gson;
 import exceptions.Exceptions;
-import model.UserData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.Server;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,74 +39,129 @@ public class ServerFacadeTests {
 
     @Test
     public void register() {
-        String authToken = facade.register("john", "wowcool", "john@example.com");
+        String authToken = facade.register("john", "mypassword", "john@example.com");
 
         assertTrue(authToken.length() > 1);
     }
 
     @Test
     public void registerAlreadyExists() {
-        facade.register("john", "wowcool", "john@example.com");
+        facade.register("john", "mypassword", "john@example.com");
 
-        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.register("john", "wowcool", "john@example.com"));
+        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.register("john", "mypassword", "john@example.com"));
     }
 
     @Test
     public void login() {
-        facade.register("john", "wowcool", "john@example.com");
-        String authToken = facade.login("john", "wowcool");
+        facade.register("john", "mypassword", "john@example.com");
+        String authToken = facade.login("john", "mypassword");
 
         assertTrue(authToken.length() > 1);
     }
 
     @Test
     public void loginNotAuthorized() {
-        Map<String, Collection<UserData>> m = new Gson().fromJson("{\"games\": [{\"username\":\"john\",\"email\":\"email@example.com\",\"password\":\"cool\"}]}", Map.class);
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.login("nonexistent", "nopassword"));
+
+        facade.register("john", "mypassword", "john@example.com");
+
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.login("john", "wrongpass"));
     }
 
     @Test
     public void logout() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
+        facade.logout(authToken);
 
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.createGame(authToken, "myGame"));
     }
 
     @Test
     public void logoutNotSignedIn() {
-
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.logout("fake-token"));
     }
 
     @Test
     public void listGames() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
+        int gameID1 = facade.createGame(authToken, "myGame");
+        int gameID2 = facade.createGame(authToken, "myGame2");
 
+        var games = facade.listGames(authToken);
+        var expected = List.of(
+                new ServerFacade.GameResponse(gameID1, null, null, "myGame"),
+                new ServerFacade.GameResponse(gameID2, null, null, "myGame2")
+        );
+
+        assertEquals(expected, games);
+    }
+
+    @Test
+    public void listGamesNotAuthorized() {
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.listGames("fake-token"));
     }
 
     @Test
     public void createGame() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
 
+        int gameID = facade.createGame(authToken, "myGame");
+
+        var actual = facade.listGames(authToken);
+        var expected = List.of(
+                new ServerFacade.GameResponse(gameID, null, null, "myGame")
+        );
+
+        assertTrue(gameID > 0);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void createGameNotAuthorized() {
-
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.listGames("fake-token"));
     }
 
     @Test
     public void joinGame() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
+        int gameID = facade.createGame(authToken, "myGame");
 
+        assertDoesNotThrow(() -> facade.joinGame(authToken, "WHITE", gameID));
     }
 
     @Test
     public void joinGameNotAuthorized() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
+        int gameID = facade.createGame(authToken, "myGame");
 
+        assertThrows(Exceptions.NotAuthorizedException.class, () -> facade.joinGame("fake-token", "WHITE", gameID));
     }
 
     @Test
     public void joinGameNotExist() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
 
+        assertThrows(Exceptions.NotFoundException.class, () -> facade.joinGame(authToken, "WHITE", -1));
     }
 
     @Test
     public void joinGameColorTaken() {
+        String authTokenJohn = facade.register("john", "mypassword", "john@example.com");
+        String authTokenJane = facade.register("jane", "mypassword", "jane@example.com");
 
+        int gameID = facade.createGame(authTokenJohn, "myGame");
+
+        facade.joinGame(authTokenJohn, "WHITE", gameID);
+
+        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.joinGame(authTokenJane, "WHITE", -1));
+    }
+
+    @Test
+    public void joinGameBadColor() {
+        String authToken = facade.register("john", "mypassword", "john@example.com");
+        int gameID = facade.createGame(authToken, "myGame");
+
+        assertThrows(Exceptions.BadRequestException.class, () -> facade.joinGame("fake-token", "RED", gameID));
     }
 
     @Test
