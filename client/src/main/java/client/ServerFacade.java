@@ -26,9 +26,7 @@ public class ServerFacade {
 
         var res = client.send(req, HttpResponse.BodyHandlers.ofString());
 
-        if (res.statusCode() != 200) {
-            throw new Exceptions.ServerErrorException();
-        }
+        if (res.statusCode() != 200) throw new Exceptions.ServerErrorException();
     }
 
     // ----- Helpers -----

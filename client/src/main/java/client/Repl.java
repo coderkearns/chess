@@ -31,13 +31,8 @@ public class Repl {
             var commandName = ui.getCommand(state.toString());
             var command = ReplCommands.commandMap.get(commandName);
 
-            if (command == null) {
-                command = new ReplCommands.InvalidCommand(commandName);
-            }
-
-            if (!command.getAllowedStates().contains(state)) {
-                command = new ReplCommands.WrongStateCommand(commandName);
-            }
+            if (command == null) command = new ReplCommands.InvalidCommand(commandName);
+            if (!command.getAllowedStates().contains(state)) command = new ReplCommands.WrongStateCommand(commandName);
 
             state = command.execute(ui, state, context);
         }

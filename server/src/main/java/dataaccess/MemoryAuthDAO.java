@@ -18,7 +18,7 @@ public class MemoryAuthDAO implements AuthDAO {
         records.put(auth.authToken(), auth.username());
         return true;
     }
-    
+
     public boolean tokenExists(AuthData auth) {
         return records.containsKey(auth.authToken());
     }

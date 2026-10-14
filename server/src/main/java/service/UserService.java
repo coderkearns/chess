@@ -54,8 +54,7 @@ public class UserService {
         if (existingUser == null) {
             throw new NotAuthorizedException();
         }
-        boolean doPasswordsMatch = BCrypt.checkpw(req.password(), existingUser.password());
-        if (!doPasswordsMatch) {
+        if (!BCrypt.checkpw(req.password(), existingUser.password())) {
             throw new NotAuthorizedException();
         }
         var auth = generateAuth(existingUser);

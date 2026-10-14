@@ -42,18 +42,17 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
                 preparedStatement.executeUpdate();
 
                 try (var resultSet = preparedStatement.getGeneratedKeys()) {
-                    if (resultSet.next()) {
-                        int gameID = resultSet.getInt(1);
-                        return new GameData(
-                                gameID,
-                                game.whiteUsername(),
-                                game.blackUsername(),
-                                game.gameName(),
-                                game.game()
-                        );
-                    } else {
+                    if (!resultSet.next()) {
                         throw new SQLException("database failed creating new row");
                     }
+                    int gameID = resultSet.getInt(1);
+                    return new GameData(
+                            gameID,
+                            game.whiteUsername(),
+                            game.blackUsername(),
+                            game.gameName(),
+                            game.game()
+                    );
                 }
             }
         });
@@ -65,17 +64,16 @@ public class SQLGameDAO extends SQLDAO implements GameDAO {
             try (var preparedStatement = conn.prepareStatement("SELECT name, white_username, black_username, game_json FROM games WHERE id = ?")) {
                 preparedStatement.setInt(1, gameID);
                 var resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    return new GameData(
-                            gameID,
-                            resultSet.getString("white_username"),
-                            resultSet.getString("black_username"),
-                            resultSet.getString("name"),
-                            gson.fromJson(resultSet.getString("game_json"), ChessGame.class)
-                    );
-                } else {
+                if (!resultSet.next()) {
                     return null;
                 }
+                return new GameData(
+                        gameID,
+                        resultSet.getString("white_username"),
+                        resultSet.getString("black_username"),
+                        resultSet.getString("name"),
+                        gson.fromJson(resultSet.getString("game_json"), ChessGame.class)
+                );
             }
         });
     }

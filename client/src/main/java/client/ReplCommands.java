@@ -32,9 +32,7 @@ public class ReplCommands {
     private static class Help extends Command {
         public Repl.State execute(UI ui, Repl.State state, Repl.Context context) {
             for (var cmd : commandMap.entrySet()) {
-                if (!cmd.getValue().getAllowedStates().contains(state)) {
-                    continue;
-                }
+                if (!cmd.getValue().getAllowedStates().contains(state)) continue;
 
                 ui.print(cmd.getKey());
             }
