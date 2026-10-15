@@ -9,12 +9,21 @@ public class ReplCommands {
     public static record CommandContext(UI ui, ServerFacade facade, Repl.State state, Repl.Context context) {
     }
 
+    public static class ImproperUsageException extends RuntimeException {
+    }
+
     public static abstract class Command {
         public Set<Repl.State> getAllowedStates() {
             return Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT);
         }
 
         public abstract Repl.State execute(String[] args, CommandContext ctx);
+
+        protected void validateArgs(String[] args, int expectedLength) {
+            if (args.length != expectedLength) {
+                throw new ImproperUsageException();
+            }
+        }
     }
 
     public static Map<String, Command> commandMap = Map.of(
@@ -51,7 +60,10 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print("Logging in!");
+            validateArgs(args, 2);
+            ctx.ui.print("Logging in...");
+            ctx.facade.login(args[0], args[1]);
+            ctx.ui.print("Logged in!");
             return Repl.State.LOGGED_IN;
         }
     }
@@ -81,6 +93,19 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             ctx.ui.print(String.format("Command '%s' is not allowed in this state. Type Help for help.", attemptedCommand));
+            return ctx.state;
+        }
+    }
+
+    public static class ImproperUsage extends Command {
+        Command attemptedCommand;
+
+        public ImproperUsage(Command attemptedCommand) {
+            this.attemptedCommand = attemptedCommand;
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            ctx.ui.print("Invalid usage. Type help for correct usage.");
             return ctx.state;
         }
     }

@@ -1,5 +1,6 @@
 package client;
 
+import exceptions.Exceptions;
 import ui.ConsoleUI;
 import ui.UI;
 
@@ -34,7 +35,7 @@ public class Repl {
         while (state != State.QUIT) {
             var commandParts = ui.getCommand(state.toString()).split(" ");
             var commandName = commandParts[0];
-            var commandArgs = Arrays.copyOfRange(commandParts, 1, commandParts.length);
+            var args = Arrays.copyOfRange(commandParts, 1, commandParts.length);
             var command = ReplCommands.commandMap.get(commandName);
 
             if (command == null) {
@@ -44,13 +45,23 @@ public class Repl {
                 command = new ReplCommands.WrongStateCommand(commandName);
             }
 
-            var ctx = new ReplCommands.CommandContext(ui, facade, state, context);
-            state = command.execute(commandArgs, ctx);
+            executeCommand(command, args);
         }
     }
 
     private void initializeState() {
         state = State.LOGGED_OUT;
         context = new Context();
+    }
+
+    private void executeCommand(ReplCommands.Command command, String[] args) {
+        var ctx = new ReplCommands.CommandContext(ui, facade, state, context);
+        try {
+            state = command.execute(args, ctx);
+        } catch (ReplCommands.ImproperUsageException e) {
+            state = new ReplCommands.ImproperUsage(command).execute(args, ctx);
+        } catch (Exceptions.ServerErrorException e) {
+            ui.printError("Server error");
+        }
     }
 }
