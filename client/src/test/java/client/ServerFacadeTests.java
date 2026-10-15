@@ -36,6 +36,22 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    // ----- HTTP & Functionality Tests -----
+    @Test
+    public void badServerURL() {
+        ServerFacade badFacade = new ServerFacade("this is a bad url");
+
+        assertThrows(Exceptions.ServerErrorException.class, badFacade::clear);
+    }
+
+    @Test
+    public void noServerConnection() {
+        ServerFacade badFacade = new ServerFacade("http://example.dev:9999");
+
+        assertThrows(Exceptions.ServerErrorException.class, badFacade::clear);
+    }
+
+    // ----- Method Tests -----
 
     @Test
     public void register() {
@@ -141,7 +157,8 @@ public class ServerFacadeTests {
     public void joinGameNotExist() {
         String authToken = facade.register("john", "mypassword", "john@example.com");
 
-        assertThrows(Exceptions.NotFoundException.class, () -> facade.joinGame(authToken, "WHITE", -1));
+        // I personally think this should throw a NotFoundException, but the professor's spec requires 400 not 404
+        assertThrows(Exceptions.BadRequestException.class, () -> facade.joinGame(authToken, "WHITE", -1));
     }
 
     @Test
@@ -153,7 +170,7 @@ public class ServerFacadeTests {
 
         facade.joinGame(authTokenJohn, "WHITE", gameID);
 
-        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.joinGame(authTokenJane, "WHITE", -1));
+        assertThrows(Exceptions.AlreadyTakenException.class, () -> facade.joinGame(authTokenJane, "WHITE", gameID));
     }
 
     @Test
@@ -161,7 +178,7 @@ public class ServerFacadeTests {
         String authToken = facade.register("john", "mypassword", "john@example.com");
         int gameID = facade.createGame(authToken, "myGame");
 
-        assertThrows(Exceptions.BadRequestException.class, () -> facade.joinGame("fake-token", "RED", gameID));
+        assertThrows(Exceptions.BadRequestException.class, () -> facade.joinGame(authToken, "RED", gameID));
     }
 
     @Test

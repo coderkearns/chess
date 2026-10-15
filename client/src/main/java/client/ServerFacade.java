@@ -10,7 +10,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -74,15 +73,44 @@ public class ServerFacade {
     public static record GameResponse(int gameID, String whiteUsername, String blackUsername, String gameName) {
     }
 
-    public Collection<GameResponse> listGames(String authToken) throws Exceptions.ServerErrorException {
-        return List.of();
+    private static record ListGamesResponse(List<GameResponse> games) {
+    }
+
+    public List<GameResponse> listGames(String authToken) throws Exceptions.ServerErrorException {
+        var res = sendRequest("/game", req -> req.GET().header("Authorization", authToken));
+
+        validateStatusCode(res);
+
+        var listGamesResponse = gson.fromJson(res.body(), ListGamesResponse.class);
+        return listGamesResponse.games();
     }
 
     public int createGame(String authToken, String gameName) throws Exceptions.ServerErrorException {
-        return 0;
+        var res = sendRequest("/game", req -> req.POST(HttpRequest.BodyPublishers.ofString(gson.toJson(Map.of(
+                        "gameName", gameName
+                )))).headers(
+                        "Content-Type", "application/json",
+                        "Authorization", authToken
+                )
+        );
+
+        validateStatusCode(res);
+
+        var gameResponse = gson.fromJson(res.body(), GameResponse.class);
+        return gameResponse.gameID();
     }
 
     public void joinGame(String authToken, String playerColor, int gameID) throws Exceptions.ServerErrorException {
+        var res = sendRequest("/game", req -> req.PUT(HttpRequest.BodyPublishers.ofString(gson.toJson(Map.of(
+                        "gameID", gameID,
+                        "playerColor", playerColor
+                )))).headers(
+                        "Content-Type", "application/json",
+                        "Authorization", authToken
+                )
+        );
+
+        validateStatusCode(res);
     }
 
     public void clear() throws Exceptions.ServerErrorException {
