@@ -3,6 +3,8 @@ package client;
 import ui.ConsoleUI;
 import ui.UI;
 
+import java.util.Arrays;
+
 public class Repl {
     public enum State {
         LOGGED_OUT,
@@ -15,11 +17,13 @@ public class Repl {
     }
 
     private final UI ui;
+    private final ServerFacade facade;
     private State state;
     private Context context;
 
     public Repl(String serverUrl) {
         ui = new ConsoleUI();
+        facade = new ServerFacade(serverUrl);
     }
 
     public void run() {
@@ -28,13 +32,20 @@ public class Repl {
         ui.print("♕ Welcome to CS 240 Chess Client. Type Help for help. ♕");
 
         while (state != State.QUIT) {
-            var commandName = ui.getCommand(state.toString());
+            var commandParts = ui.getCommand(state.toString()).split(" ");
+            var commandName = commandParts[0];
+            var commandArgs = Arrays.copyOfRange(commandParts, 1, commandParts.length);
             var command = ReplCommands.commandMap.get(commandName);
 
-            if (command == null) command = new ReplCommands.InvalidCommand(commandName);
-            if (!command.getAllowedStates().contains(state)) command = new ReplCommands.WrongStateCommand(commandName);
+            if (command == null) {
+                command = new ReplCommands.InvalidCommand(commandName);
+            }
+            if (!command.getAllowedStates().contains(state)) {
+                command = new ReplCommands.WrongStateCommand(commandName);
+            }
 
-            state = command.execute(ui, state, context);
+            var ctx = new ReplCommands.CommandContext(ui, facade, state, context);
+            state = command.execute(commandArgs, ctx);
         }
     }
 
