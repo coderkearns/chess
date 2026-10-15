@@ -29,7 +29,9 @@ public class ReplCommands {
     public static Map<String, Command> commandMap = Map.of(
             "quit", new Quit(),
             "help", new Help(),
-            "login", new Login()
+            "register", new Register(),
+            "login", new Login(),
+            "logout", new Logout()
     );
 
     // ----- COMMANDS -----
@@ -54,6 +56,20 @@ public class ReplCommands {
         }
     }
 
+    private static class Register extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_OUT);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            validateArgs(args, 3);
+            ctx.ui.print("Registering...");
+            ctx.context.authToken = ctx.facade.register(args[0], args[1], args[2]);
+            ctx.ui.print(String.format("Account created and logged in! (Authorization %s)", ctx.context.authToken));
+            return Repl.State.LOGGED_IN;
+        }
+    }
+
     private static class Login extends Command {
         public Set<Repl.State> getAllowedStates() {
             return Set.of(Repl.State.LOGGED_OUT);
@@ -62,9 +78,23 @@ public class ReplCommands {
         public Repl.State execute(String[] args, CommandContext ctx) {
             validateArgs(args, 2);
             ctx.ui.print("Logging in...");
-            ctx.facade.login(args[0], args[1]);
-            ctx.ui.print("Logged in!");
+            ctx.context.authToken = ctx.facade.login(args[0], args[1]);
+            ctx.ui.print(String.format("Logged in! (Authorization %s)", ctx.context.authToken));
             return Repl.State.LOGGED_IN;
+        }
+    }
+
+    private static class Logout extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            ctx.ui.print("Logging out...");
+            ctx.facade.logout(ctx.context.authToken);
+            ctx.context.authToken = null;
+            ctx.ui.print("Logged out!");
+            return Repl.State.LOGGED_OUT;
         }
     }
 

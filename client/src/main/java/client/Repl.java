@@ -61,7 +61,7 @@ public class Repl {
         } catch (ReplCommands.ImproperUsageException e) {
             state = new ReplCommands.ImproperUsage(command).execute(args, ctx);
         } catch (Exceptions.ServerErrorException e) {
-            ui.printError("Server error");
+            ui.printError(e.getMessage());
         }
     }
 }
