@@ -3,6 +3,7 @@ package client;
 import ui.UI;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class ReplCommands {
@@ -108,6 +109,9 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
+            validateArgs(args, 1);
+            int gameID = ctx.facade.createGame(ctx.context.authToken, args[0]);
+            ctx.ui.print(String.format("Created game %s with ID %d!", args[0], gameID));
             return ctx.state;
         }
     }
@@ -118,6 +122,8 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
+            var games = ctx.facade.listGames(ctx.context.authToken);
+            ctx.ui.printGameList(games);
             return ctx.state;
         }
     }
@@ -128,6 +134,13 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
+            validateArgs(args, 2);
+            if (!Objects.equals(args[1], "WHITE") && !Objects.equals(args[1], "BLACK")) {
+                throw new ImproperUsageException();
+            }
+
+            throw new RuntimeException("Not implemented");
+
             return ctx.state;
         }
     }
@@ -138,6 +151,10 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
+            validateArgs(args, 1);
+            
+            throw new RuntimeException("Not implemented");
+
             return ctx.state;
         }
     }
