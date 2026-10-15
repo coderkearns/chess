@@ -141,7 +141,7 @@ public class ReplCommands {
 
             throw new RuntimeException("Not implemented");
 
-            return ctx.state;
+            //return ctx.state;
         }
     }
 
@@ -152,10 +152,10 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             validateArgs(args, 1);
-            
+
             throw new RuntimeException("Not implemented");
 
-            return ctx.state;
+            //return ctx.state;
         }
     }
 
