@@ -39,13 +39,12 @@ public class ServerFacade {
                 HttpResponse.BodyHandlers.ofString()
         );
 
-        if (res.statusCode() != 200) {
-            if (res.statusCode() != 403) throw new Exceptions.ServerErrorException();
-            throw new Exceptions.AlreadyTakenException();
-        }
+        validateStatusCode(res);
 
         var registerResponse = gson.fromJson(res.body(), AuthResponse.class);
-        if (registerResponse.authToken() == null) throw new Exceptions.ServerErrorException();
+        if (registerResponse.authToken() == null) {
+            throw new Exceptions.ServerErrorException();
+        }
         return registerResponse.authToken();
     }
 
@@ -59,17 +58,19 @@ public class ServerFacade {
                 HttpResponse.BodyHandlers.ofString()
         );
 
-        if (res.statusCode() != 200) {
-            if (res.statusCode() != 401) throw new Exceptions.ServerErrorException();
-            throw new Exceptions.NotAuthorizedException();
-        }
+        validateStatusCode(res);
 
         var loginResponse = gson.fromJson(res.body(), AuthResponse.class);
-        if (loginResponse.authToken() == null) throw new Exceptions.ServerErrorException();
+        if (loginResponse.authToken() == null) {
+            throw new Exceptions.ServerErrorException();
+        }
         return loginResponse.authToken();
     }
 
     public void logout(String authToken) throws Exceptions.ServerErrorException {
+        var res = sendRequest("/session", req -> req.DELETE().header("Authorization", authToken), HttpResponse.BodyHandlers.ofString());
+
+        validateStatusCode(res);
     }
 
     public static record GameResponse(int gameID, String whiteUsername, String blackUsername, String gameName) {
@@ -89,7 +90,7 @@ public class ServerFacade {
     public void clear() throws Exceptions.ServerErrorException {
         var res = sendRequest("/db", req -> req.DELETE(), HttpResponse.BodyHandlers.ofString());
 
-        if (res.statusCode() != 200) throw new Exceptions.ServerErrorException();
+        validateStatusCode(res);
     }
 
     // ----- Helpers -----
@@ -107,6 +108,21 @@ public class ServerFacade {
             return client.send(req, handler);
         } catch (IOException | InterruptedException e) {
             throw new Exceptions.ServerErrorException();
+        }
+    }
+
+    private <T> void validateStatusCode(HttpResponse<T> res) {
+        switch (res.statusCode()) {
+            case 200:
+                return;
+            case 400:
+                throw new Exceptions.BadRequestException();
+            case 401:
+                throw new Exceptions.NotAuthorizedException();
+            case 403:
+                throw new Exceptions.AlreadyTakenException();
+            default:
+                throw new Exceptions.ServerErrorException();
         }
     }
 }
