@@ -35,8 +35,7 @@ public class ServerFacade {
                         "username", username,
                         "password", password,
                         "email", email
-                )))).header("Content-Type", "application/json"),
-                HttpResponse.BodyHandlers.ofString()
+                )))).header("Content-Type", "application/json")
         );
 
         validateStatusCode(res);
@@ -54,8 +53,7 @@ public class ServerFacade {
                 req -> req.POST(HttpRequest.BodyPublishers.ofString(gson.toJson(Map.of(
                         "username", username,
                         "password", password
-                )))).header("Content-Type", "application/json"),
-                HttpResponse.BodyHandlers.ofString()
+                )))).header("Content-Type", "application/json")
         );
 
         validateStatusCode(res);
@@ -68,7 +66,7 @@ public class ServerFacade {
     }
 
     public void logout(String authToken) throws Exceptions.ServerErrorException {
-        var res = sendRequest("/session", req -> req.DELETE().header("Authorization", authToken), HttpResponse.BodyHandlers.ofString());
+        var res = sendRequest("/session", req -> req.DELETE().header("Authorization", authToken));
 
         validateStatusCode(res);
     }
@@ -88,7 +86,7 @@ public class ServerFacade {
     }
 
     public void clear() throws Exceptions.ServerErrorException {
-        var res = sendRequest("/db", req -> req.DELETE(), HttpResponse.BodyHandlers.ofString());
+        var res = sendRequest("/db", req -> req.DELETE());
 
         validateStatusCode(res);
     }
@@ -102,16 +100,16 @@ public class ServerFacade {
         }
     }
 
-    private <T> HttpResponse<T> sendRequest(String path, UnaryOperator<HttpRequest.Builder> modifyRequest, HttpResponse.BodyHandler<T> handler) {
+    private HttpResponse<String> sendRequest(String path, UnaryOperator<HttpRequest.Builder> modifyRequest) {
         HttpRequest req = modifyRequest.apply(buildRequest(path)).build();
         try {
-            return client.send(req, handler);
+            return client.send(req, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new Exceptions.ServerErrorException();
         }
     }
 
-    private <T> void validateStatusCode(HttpResponse<T> res) {
+    private void validateStatusCode(HttpResponse<String> res) {
         switch (res.statusCode()) {
             case 200:
                 return;
