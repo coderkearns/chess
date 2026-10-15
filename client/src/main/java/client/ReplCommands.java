@@ -31,7 +31,11 @@ public class ReplCommands {
             "help", new Help(),
             "register", new Register(),
             "login", new Login(),
-            "logout", new Logout()
+            "logout", new Logout(),
+            "create", new CreateGame(),
+            "list", new ListGames(),
+            "join", new JoinGame(),
+            "observe", new ObserveGame()
     );
 
     // ----- COMMANDS -----
@@ -95,6 +99,46 @@ public class ReplCommands {
             ctx.context.authToken = null;
             ctx.ui.print("Logged out!");
             return Repl.State.LOGGED_OUT;
+        }
+    }
+
+    private static class CreateGame extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            return ctx.state;
+        }
+    }
+
+    private static class ListGames extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            return ctx.state;
+        }
+    }
+
+    private static class JoinGame extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            return ctx.state;
+        }
+    }
+
+    private static class ObserveGame extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.LOGGED_IN);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            return ctx.state;
         }
     }
 
