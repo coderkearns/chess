@@ -40,17 +40,43 @@ public class ConsoleUI implements UI {
 
     @Override
     public void showChessBoard(ChessBoard board, ChessGame.TeamColor myColor) {
-        // TODO change by color
-        System.out.printf("%s    a  b  c  d  e  f  g  h    %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, EscapeSequences.RESET_BG_COLOR);
-        for (int row = 1; row < 9; row++) {
+        printLettersRow(myColor);
+        if (myColor == ChessGame.TeamColor.WHITE) {
+            for (int row = 1; row < 9; row++) {
+                printBoardRow(board, myColor, row);
+            }
+        } else {
+            for (int row = 8; row > 0; row--) {
+                printBoardRow(board, myColor, row);
+            }
+        }
+        printLettersRow(myColor);
+
+        int initialRow = myColor == ChessGame.TeamColor.WHITE ? 1 : 9;
+        int lastRow = myColor == ChessGame.TeamColor.WHITE ? 9 : 1;
+        for (int row = initialRow; row < lastRow; row++) {
             System.out.printf("%s %d %s", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
             for (int col = 1; col < 9; col++) {
                 var color = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_BLACK;
                 var piece = board.getPiece(new ChessPosition(row, col));
-                System.out.printf("%s %s %s", color, piece == null ? " " : ".", EscapeSequences.RESET_BG_COLOR);
+                System.out.printf("%s %s %s", color, piece == null ? " " : "#", EscapeSequences.RESET_BG_COLOR);
             }
             System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
         }
-        System.out.printf("%s    a  b  c  d  e  f  g  h    %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, EscapeSequences.RESET_BG_COLOR);
+        printLettersRow(myColor);
+    }
+
+    private void printLettersRow(ChessGame.TeamColor myColor) {
+        String letters = "    a  b  c  d  e  f  g  h    ";
+        if (myColor == ChessGame.TeamColor.BLACK) {
+            StringBuilder lettersBuffer = new StringBuilder(letters);
+            lettersBuffer.reverse();
+            letters = lettersBuffer.toString();
+        }
+        System.out.printf("%s%s%s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, letters, EscapeSequences.RESET_BG_COLOR);
+    }
+
+    private void printBoardRow(ChessBoard board, ChessGame.TeamColor myColor, int row) {
+
     }
 }

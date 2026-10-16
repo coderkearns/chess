@@ -1,11 +1,14 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exceptions.Exceptions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.Server;
+import ui.ConsoleUI;
 
 import java.util.List;
 
@@ -34,6 +37,16 @@ public class ServerFacadeTests {
     @AfterAll
     static void stopServer() {
         server.stop();
+    }
+
+    @Test
+    public void test() {
+        var ui = new ConsoleUI();
+        var board = new ChessBoard();
+        board.resetBoard();
+        ui.showChessBoard(board, ChessGame.TeamColor.WHITE);
+        System.out.println();
+        ui.showChessBoard(board, ChessGame.TeamColor.BLACK);
     }
 
     // ----- HTTP & Functionality Tests -----
