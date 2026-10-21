@@ -69,7 +69,7 @@ public class Repl {
         try {
             state = command.execute(args, ctx);
         } catch (ReplCommands.ImproperUsageException e) {
-            state = new ReplCommands.ImproperUsage(command).execute(args, ctx);
+            state = new ReplCommands.ImproperUsage(command, e).execute(args, ctx);
         } catch (Exceptions.ServerErrorException e) {
             ui.printError(e.getMessage());
         }

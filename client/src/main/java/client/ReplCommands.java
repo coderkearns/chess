@@ -245,13 +245,15 @@ public class ReplCommands {
 
     public static class ImproperUsage extends Command {
         Command attemptedCommand;
+        ImproperUsageException error;
 
-        public ImproperUsage(Command attemptedCommand) {
+        public ImproperUsage(Command attemptedCommand, ImproperUsageException error) {
             this.attemptedCommand = attemptedCommand;
+            this.error = error;
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print("Invalid usage. Type help for correct usage.");
+            ctx.ui.print(String.format("Invalid usage: %s. Type help for correct usage.", error.getMessage()));
             return ctx.state;
         }
     }
