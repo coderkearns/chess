@@ -65,7 +65,9 @@ public class EscapeSequences {
     public static final String EMPTY = " \u2003 ";
 
     public static String getPieceIcon(ChessPiece piece) {
-        if (piece == null) return EMPTY;
+        if (piece == null) {
+            return EMPTY;
+        }
         boolean isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
         String fg_color = isWhite ? SET_TEXT_COLOR_RED : SET_TEXT_COLOR_BLUE;
         return fg_color + switch (piece.getPieceType()) {
