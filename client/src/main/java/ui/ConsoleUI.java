@@ -43,25 +43,20 @@ public class ConsoleUI implements UI {
         printLettersRow(myColor);
         if (myColor == ChessGame.TeamColor.WHITE) {
             for (int row = 1; row < 9; row++) {
-                printBoardRow(board, myColor, row);
+                System.out.printf("%s %d ", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row);
+                for (int col = 1; col < 9; col++) {
+                    printBoardCell(board, row, col);
+                }
+                System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
             }
         } else {
             for (int row = 8; row > 0; row--) {
-                printBoardRow(board, myColor, row);
+                System.out.printf("%s %d ", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row);
+                for (int col = 8; col > 0; col--) {
+                    printBoardCell(board, row, col);
+                }
+                System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
             }
-        }
-        printLettersRow(myColor);
-
-        int initialRow = myColor == ChessGame.TeamColor.WHITE ? 1 : 9;
-        int lastRow = myColor == ChessGame.TeamColor.WHITE ? 9 : 1;
-        for (int row = initialRow; row < lastRow; row++) {
-            System.out.printf("%s %d %s", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
-            for (int col = 1; col < 9; col++) {
-                var color = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_BLACK;
-                var piece = board.getPiece(new ChessPosition(row, col));
-                System.out.printf("%s %s %s", color, piece == null ? " " : "#", EscapeSequences.RESET_BG_COLOR);
-            }
-            System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
         }
         printLettersRow(myColor);
     }
@@ -76,7 +71,14 @@ public class ConsoleUI implements UI {
         System.out.printf("%s%s%s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, letters, EscapeSequences.RESET_BG_COLOR);
     }
 
-    private void printBoardRow(ChessBoard board, ChessGame.TeamColor myColor, int row) {
-
+    private void printBoardCell(ChessBoard board, int row, int col) {
+        var bgColor = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_BLACK : EscapeSequences.SET_BG_COLOR_WHITE;
+        var piece = board.getPiece(new ChessPosition(row, col));
+        if (piece == null) {
+            System.out.printf("%s   %s", bgColor, EscapeSequences.RESET_BG_COLOR);
+        } else {
+            var fgColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.SET_TEXT_COLOR_BLUE : EscapeSequences.SET_TEXT_COLOR_RED;
+            System.out.printf("%s%s %s %s%s", bgColor, fgColor, "#", EscapeSequences.RESET_BG_COLOR, EscapeSequences.RESET_TEXT_COLOR);
+        }
     }
 }
