@@ -42,7 +42,8 @@ public class ReplCommands {
             "create", new CreateGame(),
             "list", new ListGames(),
             "join", new JoinGame(),
-            "observe", new ObserveGame()
+            "observe", new ObserveGame(),
+            "leave", new LeaveGame()
     );
 
     // ----- COMMANDS -----
@@ -68,6 +69,10 @@ public class ReplCommands {
                 case LOGGED_OUT -> """
                         \tregister <USERNAME> <PASSWORD> <EMAIL> - create an account and log in
                         \tlogin <USERNAME> <PASSWORD> - to an existing account
+                        \tquit - end the program
+                        \thelp - show possible commands""";
+                case PLAYING, OBSERVING -> """
+                        \tleave - leave the game
                         \tquit - end the program
                         \thelp - show possible commands""";
                 default -> """
@@ -214,6 +219,18 @@ public class ReplCommands {
         }
     }
 
+    private static class LeaveGame extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.PLAYING, Repl.State.OBSERVING);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            ctx.ui.print("Leaving game...");
+            ctx.context.chessBoard = null;
+            ctx.context.playerColor = null;
+            return Repl.State.LOGGED_IN;
+        }
+    }
 
     // ----- INVALID COMMAND HELPERS -----
 
@@ -225,7 +242,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print(String.format("Command '%s' not found. Type 'help' for help.", attemptedCommand));
+            ctx.ui.printError(String.format("Command '%s' not found. Type 'help' for help.", attemptedCommand));
             return ctx.state;
         }
     }
@@ -238,7 +255,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print(String.format("Command '%s' is not allowed in this state. Type 'help' for help.", attemptedCommand));
+            ctx.ui.printError(String.format("Command '%s' is not allowed in this state. Type 'help' for help.", attemptedCommand));
             return ctx.state;
         }
     }
@@ -253,7 +270,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print(String.format("Invalid usage: %s. Type help for correct usage.", error.getMessage()));
+            ctx.ui.printError(String.format("Invalid usage: %s. Type help for correct usage.", error.getMessage()));
             return ctx.state;
         }
     }
