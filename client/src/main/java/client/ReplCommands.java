@@ -1,5 +1,8 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import exceptions.Exceptions;
 import ui.UI;
 
 import java.util.Map;
@@ -11,18 +14,21 @@ public class ReplCommands {
     }
 
     public static class ImproperUsageException extends RuntimeException {
+        ImproperUsageException(String message) {
+            super(message);
+        }
     }
 
     public static abstract class Command {
         public Set<Repl.State> getAllowedStates() {
-            return Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT);
+            return Set.of(Repl.State.LOGGED_IN, Repl.State.LOGGED_OUT, Repl.State.PLAYING, Repl.State.OBSERVING);
         }
 
         public abstract Repl.State execute(String[] args, CommandContext ctx);
 
         protected void validateArgs(String[] args, int expectedLength) {
             if (args.length != expectedLength) {
-                throw new ImproperUsageException();
+                throw new ImproperUsageException("wrong number of arguments");
             }
         }
     }
@@ -50,13 +56,25 @@ public class ReplCommands {
 
     private static class Help extends Command {
         public Repl.State execute(String[] args, CommandContext ctx) {
-            for (var cmd : commandMap.entrySet()) {
-                if (!cmd.getValue().getAllowedStates().contains(ctx.state)) {
-                    continue;
-                }
-
-                ctx.ui.print(cmd.getKey());
-            }
+            var helpText = switch (ctx.state) {
+                case LOGGED_IN -> """
+                        \tcreate <NAME> - start a new game
+                        \tlist - all current games and their details
+                        \tjoin <ID> <WHITE|BLACK> - join an existing game as the specified color
+                        \tobserve <ID> - watch a game without joining
+                        \tlogout - log out of the current user session
+                        \tquit - end the program
+                        \thelp - show possible commands""";
+                case LOGGED_OUT -> """
+                        \tregister <USERNAME> <PASSWORD> <EMAIL> - create an account and log in
+                        \tlogin <USERNAME> <PASSWORD> - to an existing account
+                        \tquit - end the program
+                        \thelp - show possible commands""";
+                default -> """
+                        \tquit - end the program
+                        \thelp - show possible commands""";
+            };
+            ctx.ui.print(helpText);
             return ctx.state;
         }
     }
@@ -70,7 +88,7 @@ public class ReplCommands {
             validateArgs(args, 3);
             ctx.ui.print("Registering...");
             ctx.context.authToken = ctx.facade.register(args[0], args[1], args[2]);
-            ctx.ui.print(String.format("Account created and logged in! (Authorization %s)", ctx.context.authToken));
+            ctx.ui.print(String.format("Account created and logged in as %s!", args[0]));
             return Repl.State.LOGGED_IN;
         }
     }
@@ -84,7 +102,7 @@ public class ReplCommands {
             validateArgs(args, 2);
             ctx.ui.print("Logging in...");
             ctx.context.authToken = ctx.facade.login(args[0], args[1]);
-            ctx.ui.print(String.format("Logged in! (Authorization %s)", ctx.context.authToken));
+            ctx.ui.print(String.format("Logged in as %s!", args[0]));
             return Repl.State.LOGGED_IN;
         }
     }
@@ -135,13 +153,27 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             validateArgs(args, 2);
-            if (!Objects.equals(args[1], "WHITE") && !Objects.equals(args[1], "BLACK")) {
-                throw new ImproperUsageException();
+
+            int gameID;
+            try {
+                gameID = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new ImproperUsageException("gameID must be an integer");
             }
 
-            throw new RuntimeException("Not implemented");
+            if (!Objects.equals(args[1], "WHITE") && !Objects.equals(args[1], "BLACK")) {
+                throw new ImproperUsageException("color must be exactly 'WHITE' or 'BLACK'");
+            }
 
-            //return ctx.state;
+
+            ctx.facade.joinGame(ctx.context.authToken, args[1], gameID);
+
+            // TODO this will be handled by websocket later
+            ctx.context.chessBoard = new ChessBoard();
+            ctx.context.chessBoard.resetBoard();
+            ctx.context.playerColor = Objects.equals(args[1], "WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+            return Repl.State.PLAYING;
         }
     }
 
@@ -153,9 +185,32 @@ public class ReplCommands {
         public Repl.State execute(String[] args, CommandContext ctx) {
             validateArgs(args, 1);
 
-            throw new RuntimeException("Not implemented");
+            int gameID;
+            try {
+                gameID = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new ImproperUsageException("gameID must be an integer");
+            }
 
-            //return ctx.state;
+            var games = ctx.facade.listGames(ctx.context.authToken);
+
+            boolean found = false;
+            for (var game : games) {
+                if (game.gameID() == gameID) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new Exceptions.NotFoundException();
+            }
+
+            // TODO this will be handled by websocket later
+            ctx.context.chessBoard = new ChessBoard();
+            ctx.context.chessBoard.resetBoard();
+            ctx.context.playerColor = ChessGame.TeamColor.WHITE;
+
+            return Repl.State.OBSERVING;
         }
     }
 
@@ -170,7 +225,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print(String.format("Command '%s' not found. Type Help for help.", attemptedCommand));
+            ctx.ui.print(String.format("Command '%s' not found. Type 'help' for help.", attemptedCommand));
             return ctx.state;
         }
     }
@@ -183,7 +238,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.print(String.format("Command '%s' is not allowed in this state. Type Help for help.", attemptedCommand));
+            ctx.ui.print(String.format("Command '%s' is not allowed in this state. Type 'help' for help.", attemptedCommand));
             return ctx.state;
         }
     }

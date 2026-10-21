@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exceptions.Exceptions;
 import ui.ConsoleUI;
 import ui.UI;
@@ -10,11 +12,15 @@ public class Repl {
     public enum State {
         LOGGED_OUT,
         LOGGED_IN,
+        PLAYING,
+        OBSERVING,
         QUIT
     }
 
     public static class Context {
         public String authToken = null;
+        public ChessBoard chessBoard = null;
+        public ChessGame.TeamColor playerColor = null;
     }
 
     private final UI ui;
@@ -33,6 +39,10 @@ public class Repl {
         ui.print("♕ Welcome to CS 240 Chess Client. Type Help for help. ♕");
 
         while (state != State.QUIT) {
+            if (state == State.PLAYING || state == State.OBSERVING) {
+                ui.showChessBoard(context.chessBoard, context.playerColor);
+            }
+
             var commandParts = ui.getCommand(state.toString()).split(" ");
             var commandName = commandParts[0];
             var args = Arrays.copyOfRange(commandParts, 1, commandParts.length);
