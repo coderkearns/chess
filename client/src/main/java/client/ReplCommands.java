@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ReplCommands {
-    public static record CommandContext(UI ui, ServerFacade facade, Repl.State state, Repl.Context context) {
+    public static record CommandContext(UI ui, ServerFacade facade, Repl.State state,
+                                        Repl.Context context) {
     }
 
     public static class ImproperUsageException extends RuntimeException {
@@ -172,6 +173,8 @@ public class ReplCommands {
 
 
             ctx.facade.joinGame(ctx.context.authToken, args[1], gameID);
+            ctx.context.gameID = gameID;
+            ctx.facade.connectGame(ctx.context.authToken, gameID);
 
             // TODO this will be handled by websocket later
             ctx.context.chessBoard = new ChessBoard();
@@ -226,6 +229,7 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             ctx.ui.print("Leaving game...");
+            ctx.context.gameID = -1;
             ctx.context.chessBoard = null;
             ctx.context.playerColor = null;
             return Repl.State.LOGGED_IN;

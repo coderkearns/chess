@@ -3,6 +3,7 @@ package client.websocket;
 import com.google.gson.Gson;
 import exceptions.Exceptions;
 import jakarta.websocket.*;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -14,7 +15,9 @@ public class WebsocketManager extends Endpoint implements MessageHandler.Whole<S
     WebsocketSubscriber subscriber;
     Gson gson = new Gson();
 
-    public WebsocketManager(String serverUrl) throws Exceptions.ServerErrorException {
+    public WebsocketManager(String serverUrl, WebsocketSubscriber subscriber) throws Exceptions.ServerErrorException {
+        this.subscriber = subscriber;
+
         try {
             URI socketURI = new URI(serverUrl.replace("http", "ws") + "/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -26,10 +29,6 @@ public class WebsocketManager extends Endpoint implements MessageHandler.Whole<S
         }
     }
 
-    public void setSubscriber(WebsocketSubscriber subscriber) {
-        this.subscriber = subscriber;
-    }
-
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
@@ -37,10 +36,15 @@ public class WebsocketManager extends Endpoint implements MessageHandler.Whole<S
     @Override
     public void onMessage(String message) {
         ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-        if (this.subscriber != null) {
-            this.subscriber.onWebsocketMessage(serverMessage);
-        }
+        this.subscriber.onWebsocketMessage(serverMessage);
     }
 
-
+    public void sendCommand(UserGameCommand command) {
+        try {
+            var message = gson.toJson(command);
+            this.session.getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            throw new Exceptions.ServerErrorException("error communicating with server");
+        }
+    }
 }

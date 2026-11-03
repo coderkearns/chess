@@ -22,7 +22,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:" + port);
+        facade = new ServerFacade("http://localhost:" + port, null);
         facade.clear();
     }
 
@@ -39,14 +39,14 @@ public class ServerFacadeTests {
     // ----- HTTP & Functionality Tests -----
     @Test
     public void badServerURL() {
-        ServerFacade badFacade = new ServerFacade("this is a bad url");
+        ServerFacade badFacade = new ServerFacade("this is a bad url", null);
 
         assertThrows(Exceptions.ServerErrorException.class, badFacade::clear);
     }
 
     @Test
     public void noServerConnection() {
-        ServerFacade badFacade = new ServerFacade("http://example.dev:9999");
+        ServerFacade badFacade = new ServerFacade("http://example.dev:9999", null);
 
         assertThrows(Exceptions.ServerErrorException.class, badFacade::clear);
     }

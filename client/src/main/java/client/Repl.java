@@ -2,13 +2,16 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import client.websocket.WebsocketManager;
+import client.websocket.WebsocketSubscriber;
 import exceptions.Exceptions;
 import ui.ConsoleUI;
 import ui.UI;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
-public class Repl {
+public class Repl implements WebsocketSubscriber {
     public enum State {
         LOGGED_OUT,
         LOGGED_IN,
@@ -19,6 +22,7 @@ public class Repl {
 
     public static class Context {
         public String authToken = null;
+        public int gameID = -1;
         public ChessBoard chessBoard = null;
         public ChessGame.TeamColor playerColor = null;
     }
@@ -30,7 +34,8 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ui = new ConsoleUI();
-        facade = new ServerFacade(serverUrl);
+        var ws = new WebsocketManager(serverUrl, this);
+        facade = new ServerFacade(serverUrl, ws);
     }
 
     public void run() {
@@ -73,5 +78,9 @@ public class Repl {
         } catch (Exceptions.ServerErrorException e) {
             ui.printError(e.getMessage());
         }
+    }
+
+    public void onWebsocketMessage(ServerMessage msg) {
+        // TODO
     }
 }

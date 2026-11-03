@@ -1,7 +1,9 @@
 package client;
 
+import client.websocket.WebsocketManager;
 import com.google.gson.Gson;
 import exceptions.Exceptions;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,11 +21,14 @@ public class ServerFacade {
     private final Gson gson = new Gson();
 
     private final String serverUrl;
+    private final WebsocketManager ws;
 
-    public ServerFacade(String url) {
+    public ServerFacade(String url, WebsocketManager ws) {
         serverUrl = url;
+        this.ws = ws;
     }
 
+    // ----- HTTP Actions -----
     private record AuthResponse(String username, String authToken) {
     }
 
@@ -119,7 +124,7 @@ public class ServerFacade {
         validateStatusCode(res);
     }
 
-    // ----- Helpers -----
+    // ----- HTTP Helpers -----
     private HttpRequest.Builder buildRequest(String path) throws Exceptions.ServerErrorException {
         try {
             return HttpRequest.newBuilder(new URI(this.serverUrl + path)).timeout(Duration.ofMillis(5000));
@@ -151,4 +156,12 @@ public class ServerFacade {
                 throw new Exceptions.ServerErrorException();
         }
     }
+
+    // ----- Websocket Actions -----
+    public void connectGame(String authToken, int gameID) {
+        this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID));
+    }
+
+    // ----- Websocket Helpers -----
+
 }
