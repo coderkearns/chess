@@ -162,6 +162,15 @@ public class ServerFacade {
         this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID));
     }
 
-    // ----- Websocket Helpers -----
+    public void leaveGame(String authToken, int gameID) {
+        this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID));
+    }
 
+    public void resignGame(String authToken, int gameID) {
+        this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
+    }
+
+    public void makeMove(String authToken, int gameID) {
+        this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID));
+    }
 }

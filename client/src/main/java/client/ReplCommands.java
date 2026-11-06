@@ -34,17 +34,21 @@ public class ReplCommands {
         }
     }
 
-    public static Map<String, Command> commandMap = Map.of(
-            "quit", new Quit(),
-            "help", new Help(),
-            "register", new Register(),
-            "login", new Login(),
-            "logout", new Logout(),
-            "create", new CreateGame(),
-            "list", new ListGames(),
-            "join", new JoinGame(),
-            "observe", new ObserveGame(),
-            "leave", new LeaveGame()
+    public static Map<String, Command> commandMap = Map.ofEntries(
+            Map.entry("quit", new Quit()),
+            Map.entry("help", new Help()),
+            Map.entry("register", new Register()),
+            Map.entry("login", new Login()),
+            Map.entry("logout", new Logout()),
+            Map.entry("create", new CreateGame()),
+            Map.entry("list", new ListGames()),
+            Map.entry("join", new JoinGame()),
+            Map.entry("observe", new ObserveGame()),
+            Map.entry("leave", new LeaveGame()),
+            Map.entry("redraw", new Redraw()),
+            Map.entry("move", new Move()),
+            Map.entry("resign", new Resign()),
+            Map.entry("highlight", new Highlight())
     );
 
     // ----- COMMANDS -----
@@ -72,8 +76,18 @@ public class ReplCommands {
                         \tlogin <USERNAME> <PASSWORD> - to an existing account
                         \tquit - end the program
                         \thelp - show possible commands""";
-                case PLAYING, OBSERVING -> """
+                case PLAYING -> """
+                        \tredraw - redraws the chess board
                         \tleave - leave the game
+                        \tmove <FROM> <TO> - make a chess move
+                        \tresign - resign and end the game
+                        \thighlight <FROM> - shows all legal moves for a given piece
+                        \tquit - end the program
+                        \thelp - show possible commands""";
+                case OBSERVING -> """
+                        \tredraw - redraws the chess board
+                        \tleave - leave the game
+                        \thighlight <FROM> - shows all legal moves for a given piece
                         \tquit - end the program
                         \thelp - show possible commands""";
                 default -> """
@@ -213,6 +227,8 @@ public class ReplCommands {
                 throw new Exceptions.NotFoundException();
             }
 
+            ctx.facade.connectGame(ctx.context.authToken, gameID);
+
             // TODO this will be handled by websocket later
             ctx.context.chessBoard = new ChessBoard();
             ctx.context.chessBoard.resetBoard();
@@ -233,6 +249,50 @@ public class ReplCommands {
             ctx.context.chessBoard = null;
             ctx.context.playerColor = null;
             return Repl.State.LOGGED_IN;
+        }
+    }
+
+    private static class Redraw extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.PLAYING, Repl.State.OBSERVING);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor);
+            return ctx.state;
+        }
+    }
+
+    private static class Highlight extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.PLAYING, Repl.State.OBSERVING);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            
+            return ctx.state;
+        }
+    }
+
+    private static class Move extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.PLAYING);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            // TODO
+            return ctx.state;
+        }
+    }
+
+    private static class Resign extends Command {
+        public Set<Repl.State> getAllowedStates() {
+            return Set.of(Repl.State.PLAYING);
+        }
+
+        public Repl.State execute(String[] args, CommandContext ctx) {
+            // TODO
+            return Repl.State.OBSERVING;
         }
     }
 
