@@ -10,7 +10,6 @@ import ui.UI;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
-import java.util.Set;
 
 public class Repl implements WebsocketSubscriber {
     public enum State {
@@ -45,9 +44,9 @@ public class Repl implements WebsocketSubscriber {
         ui.print("♕ Welcome to CS 240 Chess Client. Type Help for help. ♕");
 
         while (state != State.QUIT) {
-            if (state == State.PLAYING || state == State.OBSERVING) {
-                ui.showChessBoard(context.chessBoard, context.playerColor, Set.of());
-            }
+            // if (state == State.PLAYING || state == State.OBSERVING) {
+            //     ui.showChessBoard(context.chessBoard, context.playerColor, Set.of());
+            // }
 
             var commandParts = ui.getCommand(state.toString()).split(" ");
             var commandName = commandParts[0];

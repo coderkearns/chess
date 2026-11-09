@@ -276,10 +276,11 @@ public class ReplCommands {
             try {
                 var pos = ChessPosition.fromCoordinates(args[0]);
                 var piece = ctx.context.chessBoard.getPiece(pos);
-                var allowedMoves = piece.pieceMoves(ctx.context.chessBoard, pos);
                 var highlighted = new HashSet<ChessPosition>();
-                for (var move : allowedMoves) {
-                    highlighted.add(move.getEndPosition());
+                if (piece != null) {
+                    for (var move : piece.pieceMoves(ctx.context.chessBoard, pos)) {
+                        highlighted.add(move.getEndPosition());
+                    }
                 }
                 ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor, highlighted);
             } catch (IndexOutOfBoundsException e) {

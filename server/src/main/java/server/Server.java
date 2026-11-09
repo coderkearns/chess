@@ -38,6 +38,7 @@ public class Server {
         var userService = new UserService(userDAO, authDAO);
 
         var handlers = new Handlers(authService, gameService, userService);
+        var websocketHandler = new WebsocketHandler();
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", handlers::postUser)
@@ -52,7 +53,12 @@ public class Server {
                 .exception(Exceptions.AlreadyTakenException.class, handlers::handleAlreadyTakenException)
                 .exception(Exceptions.NotFoundException.class, handlers::handleNotFoundException)
                 .exception(DataAccessException.class, handlers::handleDataAccessException)
-                .exception(RuntimeException.class, handlers::handleGenericException);
+                .exception(RuntimeException.class, handlers::handleGenericException)
+                .ws("/ws", ws -> {
+                    ws.onConnect(websocketHandler);
+                    ws.onMessage(websocketHandler);
+                    ws.onClose(websocketHandler);
+                });
     }
 
     public int run(int desiredPort) {
