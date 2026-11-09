@@ -46,7 +46,7 @@ public class ConsoleUI implements UI {
             for (int row = 8; row > 0; row--) {
                 System.out.printf("%s %d ", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row);
                 for (int col = 1; col < 9; col++) {
-                    printBoardCell(board, row, col);
+                    printBoardCell(board, row, col, highlighted);
                 }
                 System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
             }
@@ -54,7 +54,7 @@ public class ConsoleUI implements UI {
             for (int row = 1; row < 9; row++) {
                 System.out.printf("%s %d ", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row);
                 for (int col = 8; col > 0; col--) {
-                    printBoardCell(board, row, col);
+                    printBoardCell(board, row, col, highlighted);
                 }
                 System.out.printf("%s %d %s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, row, EscapeSequences.RESET_BG_COLOR);
             }
@@ -72,9 +72,13 @@ public class ConsoleUI implements UI {
         System.out.printf("%s%s%s\n", EscapeSequences.SET_BG_COLOR_LIGHT_GREY, letters, EscapeSequences.RESET_BG_COLOR);
     }
 
-    private void printBoardCell(ChessBoard board, int row, int col) {
+    private void printBoardCell(ChessBoard board, int row, int col, Set<ChessPosition> highlighted) {
+        var pos = new ChessPosition(row, col);
         var bgColor = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_BLACK : EscapeSequences.SET_BG_COLOR_WHITE;
-        var piece = board.getPiece(new ChessPosition(row, col));
+        if (highlighted.contains(pos)) {
+            bgColor = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_DARK_GREEN : EscapeSequences.SET_BG_COLOR_GREEN;
+        }
+        var piece = board.getPiece(pos);
         System.out.printf("%s%s%s", bgColor, EscapeSequences.getPieceIcon(piece), EscapeSequences.RESET_BG_COLOR);
     }
 }
