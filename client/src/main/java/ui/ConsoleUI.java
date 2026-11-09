@@ -7,6 +7,7 @@ import client.ServerFacade;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ConsoleUI implements UI {
     Scanner scanner;
@@ -39,7 +40,7 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void showChessBoard(ChessBoard board, ChessGame.TeamColor myColor) {
+    public void showChessBoard(ChessBoard board, ChessGame.TeamColor myColor, Set<ChessPosition> highlighted) {
         printLettersRow(myColor);
         if (myColor == ChessGame.TeamColor.WHITE) {
             for (int row = 8; row > 0; row--) {

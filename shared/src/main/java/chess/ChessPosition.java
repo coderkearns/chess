@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -39,28 +38,25 @@ public class ChessPosition {
         return new ChessPosition(row + rowDelta, col + colDelta);
     }
 
-    private static final List<String> columns = List.of("a", "b", "c", "d")
-
     /**
      * Converts a chess coordinate (such as a1 or h8) to a ChessPosition object.
      *
      * @return the ChessPosition represented by those coords
      */
-    public static ChessPosition fromCoordinates(String coords) throws InvalidMoveException {
-        try {
-            String columnChar = coords.substring(0, 1);
-            String rowChar = coords.substring(1, 2);
+    public static ChessPosition fromCoordinates(String coords) throws IndexOutOfBoundsException {
+        String columnChar = coords.substring(0, 1);
+        String rowChar = coords.substring(1, 2);
 
-            int column = "abcdefgh".indexOf(columnChar) + 1;
-            if (column == 0) {
-                throw new IndexOutOfBoundsException();
-            }
-            int row = Integer.parseInt(rowChar);
-
-            return new ChessPosition(row, column);
-        } catch (IndexOutOfBoundsException e) {
-            throw new InvalidMoveException("invalid coordinate provided");
+        int column = "abcdefgh".indexOf(columnChar) + 1;
+        if (column == 0) {
+            throw new IndexOutOfBoundsException();
         }
+        int row = Integer.parseInt(rowChar);
+        if (row < 1 || row > 8) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return new ChessPosition(row, column);
     }
 
     @Override

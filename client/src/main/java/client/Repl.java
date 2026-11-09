@@ -10,6 +10,7 @@ import ui.UI;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
+import java.util.Set;
 
 public class Repl implements WebsocketSubscriber {
     public enum State {
@@ -45,7 +46,7 @@ public class Repl implements WebsocketSubscriber {
 
         while (state != State.QUIT) {
             if (state == State.PLAYING || state == State.OBSERVING) {
-                ui.showChessBoard(context.chessBoard, context.playerColor);
+                ui.showChessBoard(context.chessBoard, context.playerColor, Set.of());
             }
 
             var commandParts = ui.getCommand(state.toString()).split(" ");

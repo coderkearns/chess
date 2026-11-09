@@ -1,9 +1,15 @@
 package passoff.chess;
 
 import chess.ChessPosition;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ChessPositionTests extends EqualsTestingUtility<ChessPosition> {
     public ChessPositionTests() {
@@ -27,4 +33,18 @@ public class ChessPositionTests extends EqualsTestingUtility<ChessPosition> {
         );
     }
 
+    @Test
+    @DisplayName("Make From Coordinates")
+    public void testFromCoordinates() {
+        for (var test : Map.of(
+                "a2", new ChessPosition(2, 1),
+                "h3", new ChessPosition(3, 8)
+        ).entrySet()) {
+            assertEquals(test.getValue(), ChessPosition.fromCoordinates(test.getKey()));
+        }
+
+        assertThrows(IndexOutOfBoundsException.class, () -> ChessPosition.fromCoordinates("i2"));
+        assertThrows(IndexOutOfBoundsException.class, () -> ChessPosition.fromCoordinates("a9"));
+
+    }
 }

@@ -2,9 +2,11 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPosition;
 import exceptions.Exceptions;
 import ui.UI;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -245,6 +247,7 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             ctx.ui.print("Leaving game...");
+            ctx.facade.leaveGame(ctx.context.authToken, ctx.context.gameID);
             ctx.context.gameID = -1;
             ctx.context.chessBoard = null;
             ctx.context.playerColor = null;
@@ -258,7 +261,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor);
+            ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor, Set.of());
             return ctx.state;
         }
     }
@@ -269,7 +272,19 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            
+            validateArgs(args, 1);
+            try {
+                var pos = ChessPosition.fromCoordinates(args[0]);
+                var piece = ctx.context.chessBoard.getPiece(pos);
+                var allowedMoves = piece.pieceMoves(ctx.context.chessBoard, pos);
+                var highlighted = new HashSet<ChessPosition>();
+                for (var move : allowedMoves) {
+                    highlighted.add(move.getEndPosition());
+                }
+                ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor, highlighted);
+            } catch (IndexOutOfBoundsException e) {
+                throw new ImproperUsageException("invalid coordinates");
+            }
             return ctx.state;
         }
     }
@@ -281,6 +296,7 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             // TODO
+            ctx.facade.makeMove(ctx.context.authToken, ctx.context.gameID);
             return ctx.state;
         }
     }
@@ -291,7 +307,8 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            // TODO
+            ctx.facade.resignGame(ctx.context.authToken, ctx.context.gameID);
+            ctx.ui.print("Resigned!");
             return Repl.State.OBSERVING;
         }
     }
