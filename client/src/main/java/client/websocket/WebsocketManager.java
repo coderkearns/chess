@@ -35,6 +35,7 @@ public class WebsocketManager extends Endpoint implements MessageHandler.Whole<S
 
     @Override
     public void onMessage(String message) {
+        System.out.println("Got message: " + message);
         ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
         this.subscriber.onWebsocketMessage(serverMessage);
     }
