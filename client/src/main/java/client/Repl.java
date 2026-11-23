@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import client.websocket.WebsocketManager;
 import client.websocket.WebsocketSubscriber;
@@ -23,7 +22,7 @@ public class Repl implements WebsocketSubscriber {
     public static class Context {
         public String authToken = null;
         public int gameID = -1;
-        public ChessBoard chessBoard = null;
+        public ChessGame chessGame = null;
         public ChessGame.TeamColor playerColor = null;
     }
 
@@ -44,10 +43,6 @@ public class Repl implements WebsocketSubscriber {
         ui.print("♕ Welcome to CS 240 Chess Client. Type Help for help. ♕");
 
         while (state != State.QUIT) {
-            // if (state == State.PLAYING || state == State.OBSERVING) {
-            //     ui.showChessBoard(context.chessBoard, context.playerColor, Set.of());
-            // }
-
             var commandParts = ui.getCommand(state.toString()).split(" ");
             var commandName = commandParts[0];
             var args = Arrays.copyOfRange(commandParts, 1, commandParts.length);

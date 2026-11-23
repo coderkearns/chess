@@ -1,8 +1,9 @@
 package client;
 
-import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
+import chess.InvalidMoveException;
 import exceptions.Exceptions;
 import ui.UI;
 
@@ -193,8 +194,7 @@ public class ReplCommands {
             ctx.facade.connectGame(ctx.context.authToken, gameID);
 
             // TODO this will be handled by websocket later
-            ctx.context.chessBoard = new ChessBoard();
-            ctx.context.chessBoard.resetBoard();
+            ctx.context.chessGame = new ChessGame();
             ctx.context.playerColor = Objects.equals(args[1], "WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
             return Repl.State.PLAYING;
@@ -231,9 +231,7 @@ public class ReplCommands {
 
             ctx.facade.connectGame(ctx.context.authToken, gameID);
 
-            // TODO this will be handled by websocket later
-            ctx.context.chessBoard = new ChessBoard();
-            ctx.context.chessBoard.resetBoard();
+            ctx.context.chessGame = new ChessGame();
             ctx.context.playerColor = ChessGame.TeamColor.WHITE;
 
             return Repl.State.OBSERVING;
@@ -249,7 +247,7 @@ public class ReplCommands {
             ctx.ui.print("Leaving game...");
             ctx.facade.leaveGame(ctx.context.authToken, ctx.context.gameID);
             ctx.context.gameID = -1;
-            ctx.context.chessBoard = null;
+            ctx.context.chessGame = null;
             ctx.context.playerColor = null;
             return Repl.State.LOGGED_IN;
         }
@@ -261,7 +259,7 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor, Set.of());
+            ctx.ui.showChessBoard(ctx.context.chessGame.getBoard(), ctx.context.playerColor, Set.of());
             return ctx.state;
         }
     }
@@ -275,14 +273,13 @@ public class ReplCommands {
             validateArgs(args, 1);
             try {
                 var pos = ChessPosition.fromCoordinates(args[0]);
-                var piece = ctx.context.chessBoard.getPiece(pos);
+                var piece = ctx.context.chessGame.getBoard().getPiece(pos);
+                var legalMoves = ctx.context.chessGame.validMoves(pos);
                 var highlighted = new HashSet<ChessPosition>();
-                if (piece != null) {
-                    for (var move : piece.pieceMoves(ctx.context.chessBoard, pos)) {
-                        highlighted.add(move.getEndPosition());
-                    }
+                for (var move : legalMoves) {
+                    highlighted.add(move.getEndPosition());
                 }
-                ctx.ui.showChessBoard(ctx.context.chessBoard, ctx.context.playerColor, highlighted);
+                ctx.ui.showChessBoard(ctx.context.chessGame.getBoard(), ctx.context.playerColor, highlighted);
             } catch (IndexOutOfBoundsException e) {
                 throw new ImproperUsageException("invalid coordinates");
             }
@@ -296,7 +293,25 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
-            // TODO
+            if (args.length < 2 || args.length > 3) {
+                throw new ImproperUsageException("wrong number of arguments");
+            }
+
+            if (ctx.context.playerColor != ctx.context.chessGame.getTeamTurn()) {
+                ctx.ui.printError("Not your turn!");
+                return ctx.state;
+            }
+
+            // TODO promotion piece parsing
+            var from = ChessPosition.fromCoordinates(args[0]);
+            var move = new ChessMove(from, ChessPosition.fromCoordinates(args[1]), null);
+
+            try {
+                ctx.context.chessGame.makeMove(move);
+            } catch (InvalidMoveException e) {
+                throw new ImproperUsageException(e.getMessage());
+            }
+
             ctx.facade.makeMove(ctx.context.authToken, ctx.context.gameID);
             return ctx.state;
         }
