@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
@@ -40,8 +39,7 @@ public class GameService {
     public static record ListGamesResponse(Collection<GameResponse> games) {
     }
 
-    public static record MakeMoveResponse(ChessGame.TeamColor winner, ChessGame.TeamColor currentTurn,
-                                          ChessBoard board) {
+    public static record PlayerDetailsResponse(String username, ChessGame.TeamColor color) {
     }
 
     /* --- Methods --- */
@@ -85,7 +83,7 @@ public class GameService {
         gameDAO.setGame(new GameData(game.gameID(), newWhiteUsername, newBlackUsername, game.gameName(), game.game()));
     }
 
-    public MakeMoveResponse makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public ChessGame makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
@@ -101,10 +99,10 @@ public class GameService {
         gameData.game().makeMove(move);
         gameDAO.setGame(gameData);
 
-        return new MakeMoveResponse(gameData.game().getWinner(), gameData.game().getTeamTurn(), gameData.game().getBoard());
+        return gameData.game();
     }
 
-    public MakeMoveResponse resign(String authToken, int gameID) throws DataAccessException {
+    public ChessGame resign(String authToken, int gameID) throws DataAccessException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
@@ -120,17 +118,32 @@ public class GameService {
         gameData.game().resign(color);
         gameDAO.setGame(gameData);
 
-        return new MakeMoveResponse(gameData.game().getWinner(), gameData.game().getTeamTurn(), gameData.game().getBoard());
+        return gameData.game();
     }
 
-    public MakeMoveResponse getCurrentState(String authToken, int gameID) throws DataAccessException {
+    public ChessGame getCurrentState(String authToken, int gameID) throws DataAccessException {
         var gameData = gameDAO.find(gameID);
 
         if (gameData == null) {
             throw new Exceptions.NotFoundException();
         }
 
-        return new MakeMoveResponse(gameData.game().getWinner(), gameData.game().getTeamTurn(), gameData.game().getBoard());
+        return gameData.game();
+    }
+
+    public PlayerDetailsResponse getPlayerDetails(String authToken, int gameID) throws DataAccessException {
+        var username = authDAO.getUsername(authToken);
+        var gameData = gameDAO.find(gameID);
+
+        if (gameData == null) {
+            throw new Exceptions.NotFoundException();
+        }
+
+        var color = Objects.equals(username,
+                gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE : (
+                Objects.equals(username, gameData.blackUsername()) ? ChessGame.TeamColor.BLACK : null
+        );
+        return new PlayerDetailsResponse(username, color);
     }
 
     public void clear() throws DataAccessException {

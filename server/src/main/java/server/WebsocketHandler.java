@@ -61,8 +61,18 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void onConnect(UserGameCommand command, WsMessageContext ctx) throws IOException {
         connections.add(command.getGameID(), ctx.session);
         try {
-            var current = gameService.getCurrentState(command.getAuthToken(), command.getGameID());
-            connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(current.winner(), current.currentTurn(), current.board()));
+            authService.verify(command.getAuthToken());
+            var gameState = gameService.getCurrentState(command.getAuthToken(), command.getGameID());
+            var playerDetails = gameService.getPlayerDetails(command.getAuthToken(), command.getGameID());
+            ctx.session.getRemote().sendString(
+                    new Gson().toJson(new ServerMessage.LoadGame(gameState))
+            );
+            var notification = playerDetails.color() == null
+                    ? String.format("%s joined to observe!", playerDetails.username())
+                    : String.format("%s joined as %s!", playerDetails.username(), playerDetails.color());
+            connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification(notification));
+        } catch (Exceptions.NotAuthorizedException e) {
+            broadcastError(command.getGameID(), "not authorized");
         } catch (DataAccessException e) {
             broadcastError(command.getGameID(), "server error getting game data");
         }
@@ -75,8 +85,8 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void onResign(UserGameCommand command, WsMessageContext ctx) throws IOException {
         try {
             authService.verify(command.getAuthToken());
-            var response = gameService.resign(command.getAuthToken(), command.getGameID());
-            connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(response.winner(), response.currentTurn(), response.board()));
+            var gameState = gameService.resign(command.getAuthToken(), command.getGameID());
+            connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
         } catch (Exceptions.NotAuthorizedException e) {
             broadcastError(command.getGameID(), "not authorized");
         } catch (DataAccessException e) {
@@ -87,8 +97,8 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void onMakeMove(UserGameCommand.MakeMove command, WsMessageContext ctx) throws IOException {
         try {
             authService.verify(command.getAuthToken());
-            var response = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
-            connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(response.winner(), response.currentTurn(), response.board()));
+            var gameState = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+            connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
         } catch (Exceptions.NotAuthorizedException e) {
             broadcastError(command.getGameID(), "not authorized");
         } catch (InvalidMoveException e) {

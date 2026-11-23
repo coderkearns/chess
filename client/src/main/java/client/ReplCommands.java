@@ -277,8 +277,10 @@ public class ReplCommands {
                 var piece = ctx.context.chessGame.getBoard().getPiece(pos);
                 var legalMoves = ctx.context.chessGame.validMoves(pos);
                 var highlighted = new HashSet<ChessPosition>();
-                for (var move : legalMoves) {
-                    highlighted.add(move.getEndPosition());
+                if (legalMoves != null) {
+                    for (var move : legalMoves) {
+                        highlighted.add(move.getEndPosition());
+                    }
                 }
                 ctx.ui.showChessBoard(ctx.context.chessGame.getBoard(), ctx.context.playerColor, highlighted);
                 ctx.ui.print(String.format("%s's turn", ctx.context.chessGame.getTeamTurn()));

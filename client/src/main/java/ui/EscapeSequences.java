@@ -71,12 +71,18 @@ public class EscapeSequences {
         boolean isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
         String fg_color = isWhite ? SET_TEXT_COLOR_RED : SET_TEXT_COLOR_BLUE;
         return fg_color + switch (piece.getPieceType()) {
-            case KING -> isWhite ? WHITE_KING : BLACK_KING;
-            case QUEEN -> isWhite ? WHITE_QUEEN : BLACK_QUEEN;
-            case BISHOP -> isWhite ? WHITE_BISHOP : BLACK_BISHOP;
-            case KNIGHT -> isWhite ? WHITE_KNIGHT : BLACK_KNIGHT;
-            case ROOK -> isWhite ? WHITE_ROOK : BLACK_ROOK;
-            case PAWN -> isWhite ? WHITE_PAWN : BLACK_PAWN;
+//            case KING -> isWhite ? WHITE_KING : BLACK_KING;
+//            case QUEEN -> isWhite ? WHITE_QUEEN : BLACK_QUEEN;
+//            case BISHOP -> isWhite ? WHITE_BISHOP : BLACK_BISHOP;
+//            case KNIGHT -> isWhite ? WHITE_KNIGHT : BLACK_KNIGHT;
+//            case ROOK -> isWhite ? WHITE_ROOK : BLACK_ROOK;
+//            case PAWN -> isWhite ? WHITE_PAWN : BLACK_PAWN;
+            case KING -> BLACK_KING;
+            case QUEEN -> BLACK_QUEEN;
+            case BISHOP -> BLACK_BISHOP;
+            case KNIGHT -> BLACK_KNIGHT;
+            case ROOK -> BLACK_ROOK;
+            case PAWN -> BLACK_PAWN;
         } + RESET_TEXT_COLOR;
     }
 }

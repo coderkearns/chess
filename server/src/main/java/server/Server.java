@@ -1,6 +1,12 @@
 package server;
 
-import dataaccess.*;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
+import dataaccess.sql.SQLAuthDAO;
+import dataaccess.sql.SQLGameDAO;
+import dataaccess.sql.SQLUserDAO;
 import exceptions.Exceptions;
 import io.javalin.Javalin;
 import service.AuthService;
@@ -16,19 +22,16 @@ public class Server {
         GameDAO gameDAO = null;
         UserDAO userDAO = null;
 
-//        try {
-//            authDAO = new SQLAuthDAO();
-//            gameDAO = new SQLGameDAO();
-//            userDAO = new SQLUserDAO();
-//        } catch (DataAccessException e) {
-//            System.err.println(e);
-//            System.err.println("Error accessing database during setup");
-//            javalin = null;
-//            return;
-//        }
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
-        userDAO = new MemoryUserDAO();
+        try {
+            authDAO = new SQLAuthDAO();
+            gameDAO = new SQLGameDAO();
+            userDAO = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            System.err.println(e);
+            System.err.println("Error accessing database during setup");
+            javalin = null;
+            return;
+        }
 
         var authService = new AuthService(authDAO);
         var gameService = new GameService(authDAO, gameDAO);

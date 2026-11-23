@@ -1,6 +1,5 @@
 package websocket.messages;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 
 import java.util.Objects;
@@ -28,49 +27,45 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
-    public static class LoadGame extends ServerMessage {
-        public LoadGame() {
-            super(ServerMessageType.LOAD_GAME);
+    public static class Notification extends ServerMessage {
+        final String message;
+
+        public Notification(String message) {
+            super(ServerMessageType.NOTIFICATION);
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
         }
     }
 
     public static class Error extends ServerMessage {
-        final String msg;
+        final String errorMessage;
 
-        public Error(String msg) {
+        public Error(String message) {
             super(ServerMessageType.ERROR);
-            this.msg = msg;
+            this.errorMessage = message;
         }
 
-        public String getMsg() {
-            return msg;
+        public String getMessage() {
+            return errorMessage;
+        }
+    }
+
+    public static class LoadGame extends ServerMessage {
+        final ChessGame game;
+
+        public LoadGame(ChessGame game) {
+            super(ServerMessageType.LOAD_GAME);
+            this.game = game;
+        }
+
+        public ChessGame getGame() {
+            return game;
         }
     }
 
-    public static class Notification extends ServerMessage {
-        final ChessGame.TeamColor winner;
-        final ChessGame.TeamColor currentTurn;
-        final ChessBoard board;
-
-        public Notification(ChessGame.TeamColor winner, ChessGame.TeamColor currentTurn, ChessBoard board) {
-            super(ServerMessageType.NOTIFICATION);
-            this.winner = winner;
-            this.currentTurn = currentTurn;
-            this.board = board;
-        }
-
-        public ChessGame.TeamColor getWinner() {
-            return winner;
-        }
-
-        public ChessGame.TeamColor getCurrentTurn() {
-            return currentTurn;
-        }
-
-        public ChessBoard getBoard() {
-            return board;
-        }
-    }
 
     @Override
     public boolean equals(Object o) {

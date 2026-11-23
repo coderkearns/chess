@@ -197,6 +197,14 @@ public class ChessGame {
         return gameOver;
     }
 
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public void setWinner(TeamColor winner) {
+        this.winner = winner;
+    }
+
     /**
      * Returns the winner's color, or null if it's a stalemate.
      */
