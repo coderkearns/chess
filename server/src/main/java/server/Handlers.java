@@ -107,10 +107,12 @@ public class Handlers {
     }
 
     public void handleDataAccessException(DataAccessException e, Context ctx) {
+        System.err.println(e);
         ctx.result("{\"message\": \"Error: internal server error\"}").status(500);
     }
 
     public void handleGenericException(RuntimeException e, Context ctx) {
+        System.err.println(e);
         ctx.result("{\"message\": \"Error: internal server error\"}").status(500);
     }
 }

@@ -260,6 +260,7 @@ public class ReplCommands {
 
         public Repl.State execute(String[] args, CommandContext ctx) {
             ctx.ui.showChessBoard(ctx.context.chessGame.getBoard(), ctx.context.playerColor, Set.of());
+            ctx.ui.print(String.format("%s's turn", ctx.context.chessGame.getTeamTurn()));
             return ctx.state;
         }
     }
@@ -280,6 +281,7 @@ public class ReplCommands {
                     highlighted.add(move.getEndPosition());
                 }
                 ctx.ui.showChessBoard(ctx.context.chessGame.getBoard(), ctx.context.playerColor, highlighted);
+                ctx.ui.print(String.format("%s's turn", ctx.context.chessGame.getTeamTurn()));
             } catch (IndexOutOfBoundsException e) {
                 throw new ImproperUsageException("invalid coordinates");
             }
@@ -312,7 +314,7 @@ public class ReplCommands {
                 throw new ImproperUsageException(e.getMessage());
             }
 
-            ctx.facade.makeMove(ctx.context.authToken, ctx.context.gameID);
+            ctx.facade.makeMove(ctx.context.authToken, ctx.context.gameID, move);
             return ctx.state;
         }
     }

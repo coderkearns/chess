@@ -1,5 +1,8 @@
 package websocket.messages;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+
 import java.util.Objects;
 
 /**
@@ -23,6 +26,50 @@ public class ServerMessage {
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
+    }
+
+    public static class LoadGame extends ServerMessage {
+        public LoadGame() {
+            super(ServerMessageType.LOAD_GAME);
+        }
+    }
+
+    public static class Error extends ServerMessage {
+        final String msg;
+
+        public Error(String msg) {
+            super(ServerMessageType.ERROR);
+            this.msg = msg;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+    }
+
+    public static class Notification extends ServerMessage {
+        final ChessGame.TeamColor winner;
+        final ChessGame.TeamColor currentTurn;
+        final ChessBoard board;
+
+        public Notification(ChessGame.TeamColor winner, ChessGame.TeamColor currentTurn, ChessBoard board) {
+            super(ServerMessageType.NOTIFICATION);
+            this.winner = winner;
+            this.currentTurn = currentTurn;
+            this.board = board;
+        }
+
+        public ChessGame.TeamColor getWinner() {
+            return winner;
+        }
+
+        public ChessGame.TeamColor getCurrentTurn() {
+            return currentTurn;
+        }
+
+        public ChessBoard getBoard() {
+            return board;
+        }
     }
 
     @Override

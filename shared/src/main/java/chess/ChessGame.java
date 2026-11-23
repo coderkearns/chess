@@ -14,6 +14,8 @@ public class ChessGame {
 
     private TeamColor teamTurn = TeamColor.WHITE;
     private ChessBoard board = new ChessBoard();
+    private boolean gameOver = false;
+    private TeamColor winner = null;
 
     public ChessGame() {
         board.resetBoard();
@@ -51,6 +53,10 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if (gameOver) {
+            return null;
+        }
+
         ChessPiece piece = board.getPiece(startPosition);
 
         if (piece == null) {
@@ -81,6 +87,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("Game is over");
+        }
+
         ChessPiece piece = board.getPiece(move.getStartPosition());
 
         if (piece == null) {
@@ -99,6 +109,14 @@ public class ChessGame {
 
         setBoard(board.cloneWithMove(move));
         toggleTeamTurn();
+
+        if (isInCheckmate(teamTurn)) {
+            gameOver = true;
+            winner = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        } else if (isInStalemate(teamTurn)) {
+            gameOver = true;
+            winner = null;
+        }
     }
 
     private boolean isInCheck(ChessBoard currentBoard, TeamColor teamColor, ChessPosition targetPosition) {
@@ -170,6 +188,22 @@ public class ChessGame {
         return !isInCheck(teamColor) && !hasSafeMoves(teamColor);
     }
 
+    public void resign(TeamColor teamColor) {
+        gameOver = true;
+        winner = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    /**
+     * Returns the winner's color, or null if it's a stalemate.
+     */
+    public TeamColor getWinner() {
+        return winner;
+    }
+
     /**
      * Sets this game's chessboard to a given board
      *
@@ -194,12 +228,12 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
+        return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board) && gameOver == chessGame.gameOver;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamTurn, board);
+        return Objects.hash(teamTurn, board, gameOver);
     }
 
     @Override
@@ -207,6 +241,7 @@ public class ChessGame {
         return "ChessGame{" +
                 "teamTurn=" + teamTurn +
                 ", board=" + board +
+                ", gameOver=" + gameOver +
                 '}';
     }
 }

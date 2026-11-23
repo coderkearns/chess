@@ -75,8 +75,21 @@ public class Repl implements WebsocketSubscriber {
         }
     }
 
-    public void onWebsocketMessage(ServerMessage msg) {
-        ui.print("\nWEBSOCKET: ");
-        ui.print(msg.toString());
+    public void onWebsocketError(ServerMessage.Error msg) {
+        ui.printError("\n\n" + msg.getMsg());
     }
+
+    public void onWebsocketNotification(ServerMessage.Notification msg) {
+        context.chessGame.setTeamTurn(msg.getCurrentTurn());
+        context.chessGame.setBoard(msg.getBoard());
+
+        if (msg.getWinner() != null) {
+            ui.print(String.format("\n%s won!\n[OBSERVING] >>> ", msg.getWinner()));
+            state = State.OBSERVING;
+        }
+    }
+
+    public void onWebsocketLoadGame(ServerMessage.LoadGame msg) {
+    }
+
 }

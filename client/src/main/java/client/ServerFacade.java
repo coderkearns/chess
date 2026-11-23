@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessMove;
 import client.websocket.WebsocketManager;
 import com.google.gson.Gson;
 import exceptions.Exceptions;
@@ -170,7 +171,7 @@ public class ServerFacade {
         this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
     }
 
-    public void makeMove(String authToken, int gameID) {
-        this.ws.sendCommand(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID));
+    public void makeMove(String authToken, int gameID, ChessMove move) {
+        this.ws.sendCommand(new UserGameCommand.MakeMove(authToken, gameID, move));
     }
 }
