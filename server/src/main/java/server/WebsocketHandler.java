@@ -71,6 +71,8 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     ? String.format("%s joined to observe!", playerDetails.username())
                     : String.format("%s joined as %s!", playerDetails.username(), playerDetails.color());
             connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification(notification));
+        } catch (Exceptions.NotFoundException e) {
+            sendError(ctx, "game not found");
         } catch (Exceptions.NotAuthorizedException e) {
             broadcastError(command.getGameID(), "not authorized");
         } catch (DataAccessException e) {
@@ -109,6 +111,10 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     // ----- Helpers -----
+    private void sendError(WsMessageContext ctx, String msg) throws IOException {
+        ctx.session.getRemote().sendString(new Gson().toJson(new ServerMessage.Error(msg)));
+    }
+
     private void broadcastError(int gameID, String msg) throws IOException {
         connections.broadcast(gameID, null, new ServerMessage.Error(msg));
     }
