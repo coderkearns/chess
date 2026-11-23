@@ -81,7 +81,7 @@ public class Repl implements WebsocketSubscriber {
     }
 
     public void onWebsocketMessage(ServerMessage msg) {
-        ui.print("\n");
+        ui.print("\nWEBSOCKET: ");
         ui.print(msg.toString());
     }
 }
