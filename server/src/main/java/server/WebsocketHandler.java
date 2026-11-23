@@ -101,6 +101,10 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             authService.verify(command.getAuthToken());
             var gameState = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
             connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
+            connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification("Move made!"));
+            if (gameState.isInCheck(gameState.getTeamTurn())) {
+                connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s is in check!", gameState.getTeamTurn())));
+            }
         } catch (Exceptions.NotAuthorizedException e) {
             broadcastError(command.getGameID(), "not authorized");
         } catch (InvalidMoveException e) {
