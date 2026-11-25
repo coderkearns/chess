@@ -327,8 +327,10 @@ public class ReplCommands {
         }
 
         public Repl.State execute(String[] args, CommandContext ctx) {
+            if (!ctx.ui.confirm("Are you sure you want to resign?")) {
+                return ctx.state;
+            }
             ctx.facade.resignGame(ctx.context.authToken, ctx.context.gameID);
-            ctx.ui.print("Resigned!");
             return Repl.State.OBSERVING;
         }
     }

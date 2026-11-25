@@ -14,6 +14,8 @@ public interface UI {
 
     public void printError(String msg);
 
+    public boolean confirm(String msg);
+
     public void printGameList(List<ServerFacade.GameResponse> games);
 
     public void showChessBoard(ChessBoard board, ChessGame.TeamColor myColor, Set<ChessPosition> highlighted);

@@ -33,6 +33,12 @@ public class ConsoleUI implements UI {
     }
 
     @Override
+    public boolean confirm(String msg) {
+        System.out.printf("%s [y/N] ", msg);
+        return scanner.nextLine().trim().equalsIgnoreCase("y");
+    }
+
+    @Override
     public void printGameList(List<ServerFacade.GameResponse> games) {
         for (var game : games) {
             System.out.printf("%d %s\t[white=%s, black=%s]\n", game.gameID(), game.gameName(), game.whiteUsername(), game.blackUsername());
