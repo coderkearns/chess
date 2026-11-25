@@ -34,6 +34,10 @@ public class ChessPiece {
         PAWN
     }
 
+    public static PieceType pieceTypeFromString(String str) {
+        return PieceType.valueOf(str.trim().toUpperCase());
+    }
+
     /**
      * @return Which team this chess piece belongs to
      */

@@ -1,9 +1,6 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import exceptions.Exceptions;
 import ui.UI;
 
@@ -306,9 +303,17 @@ public class ReplCommands {
                 return ctx.state;
             }
 
-            // TODO promotion piece parsing
+            ChessPiece.PieceType promotionPiece = null;
+            if (args.length == 3) {
+                try {
+                    promotionPiece = ChessPiece.pieceTypeFromString(args[2]);
+                } catch (IllegalArgumentException e) {
+                    throw new ImproperUsageException("not a real piece type. options are QUEEN, ROOK, BISHOP, or KNIGHT");
+                }
+            }
+
             var from = ChessPosition.fromCoordinates(args[0]);
-            var move = new ChessMove(from, ChessPosition.fromCoordinates(args[1]), null);
+            var move = new ChessMove(from, ChessPosition.fromCoordinates(args[1]), promotionPiece);
 
             try {
                 ctx.context.chessGame.makeMove(move);
