@@ -9,6 +9,7 @@ import ui.UI;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
+import java.util.Set;
 
 public class Repl implements WebsocketSubscriber {
     public enum State {
@@ -89,6 +90,9 @@ public class Repl implements WebsocketSubscriber {
     public void onWebsocketLoadGame(ServerMessage.LoadGame msg) {
         context.chessGame.setTeamTurn(msg.getGame().getTeamTurn());
         context.chessGame.setBoard(msg.getGame().getBoard());
+
+        ui.print("");
+        ui.showChessBoard(context.chessGame.getBoard(), context.playerColor, Set.of());
 
         if (msg.getGame().isGameOver()) {
             context.chessGame.setGameOver(true);

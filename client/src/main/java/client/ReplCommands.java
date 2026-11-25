@@ -79,7 +79,7 @@ public class ReplCommands {
                 case PLAYING -> """
                         \tredraw - redraws the chess board
                         \tleave - leave the game
-                        \tmove <FROM> <TO> - make a chess move
+                        \tmove <FROM> <TO> [PROMOTION] - make a chess move
                         \tresign - resign and end the game
                         \thighlight <FROM> - shows all legal moves for a given piece
                         \tquit - end the program
@@ -226,7 +226,7 @@ public class ReplCommands {
             }
 
             ctx.facade.connectGame(ctx.context.authToken, gameID);
-
+            ctx.context.gameID = gameID;
             ctx.context.chessGame = new ChessGame();
             ctx.context.playerColor = ChessGame.TeamColor.WHITE;
 
