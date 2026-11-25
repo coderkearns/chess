@@ -93,10 +93,6 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void onResign(UserGameCommand command, WsMessageContext ctx) throws IOException {
-        /*
-        Server marks the game as over (no more moves can be made). Game is updated in the database.
-Server sends a Notification message to all clients in that game informing them that the root client resigned. This applies to both players and observers.
-*/
         try {
             authService.verify(command.getAuthToken());
             var resignedUser = gameService.resign(command.getAuthToken(), command.getGameID());
@@ -115,9 +111,13 @@ Server sends a Notification message to all clients in that game informing them t
             authService.verify(command.getAuthToken());
             var moveResponse = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
             connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(moveResponse.game()));
-            connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification(String.format("%s moved from %s to %s!", moveResponse.username(), moveResponse.from(), moveResponse.to())));
+            connections.broadcast(command.getGameID(), ctx.session,
+                    new ServerMessage.Notification(String.format("%s moved from %s to %s!",
+                            moveResponse.username(), moveResponse.from(), moveResponse.to())
+                    ));
             if (moveResponse.inCheck() != null) {
-                connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s is in check!", moveResponse.inCheck())));
+                connections.broadcast(command.getGameID(), null,
+                        new ServerMessage.Notification(String.format("%s is in check!", moveResponse.inCheck())));
             }
         } catch (Exceptions.NotAuthorizedException e) {
             sendError(ctx, "not authorized");
