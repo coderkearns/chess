@@ -44,6 +44,9 @@ public class Repl implements WebsocketSubscriber {
 
         while (state != State.QUIT) {
             var commandParts = ui.getCommand(state.toString()).split(" ");
+            if (commandParts.length == 0 || commandParts[0] == "") {
+                continue;
+            }
             var commandName = commandParts[0];
             var args = Arrays.copyOfRange(commandParts, 1, commandParts.length);
             var command = ReplCommands.commandMap.get(commandName);
