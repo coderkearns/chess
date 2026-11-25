@@ -107,11 +107,11 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s is in check!", gameState.getTeamTurn())));
             }
         } catch (Exceptions.NotAuthorizedException e) {
-            broadcastError(command.getGameID(), "not authorized");
+            sendError(ctx, "not authorized");
         } catch (InvalidMoveException e) {
             sendError(ctx, "invalid move");
         } catch (DataAccessException e) {
-            broadcastError(command.getGameID(), "server error getting game data");
+            sendError(ctx, "server error getting game data");
         }
     }
 
