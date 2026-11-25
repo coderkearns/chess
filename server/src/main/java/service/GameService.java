@@ -42,6 +42,9 @@ public class GameService {
     public static record PlayerDetailsResponse(String username, ChessGame.TeamColor color) {
     }
 
+    public static record MakeMoveResponse(ChessGame game, String username, String from, String to, String inCheck) {
+    }
+
     /* --- Methods --- */
 
     public ListGamesResponse listGames() throws DataAccessException {
@@ -83,7 +86,7 @@ public class GameService {
         gameDAO.setGame(new GameData(game.gameID(), newWhiteUsername, newBlackUsername, game.gameName(), game.game()));
     }
 
-    public ChessGame makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public MakeMoveResponse makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
@@ -99,7 +102,12 @@ public class GameService {
         gameData.game().makeMove(move);
         gameDAO.setGame(gameData);
 
-        return gameData.game();
+        String inCheck = null;
+        if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
+            inCheck = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? gameData.whiteUsername() : gameData.blackUsername();
+        }
+
+        return new MakeMoveResponse(gameData.game(), username, move.getStartPosition().toCoordinates(), move.getEndPosition().toCoordinates(), inCheck);
     }
 
     public String resign(String authToken, int gameID) throws DataAccessException, Exceptions.NotFoundException, Exceptions.BadRequestException, Exceptions.NotAuthorizedException {

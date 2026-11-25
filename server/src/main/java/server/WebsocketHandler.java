@@ -1,6 +1,5 @@
 package server;
 
-import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
@@ -114,11 +113,11 @@ Server sends a Notification message to all clients in that game informing them t
     private void onMakeMove(UserGameCommand.MakeMove command, WsMessageContext ctx) throws IOException {
         try {
             authService.verify(command.getAuthToken());
-            ChessGame gameState = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
-            connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
-            connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification("Move made!"));
-            if (gameState.isInCheck(gameState.getTeamTurn())) {
-                connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s is in check!", gameState.getTeamTurn())));
+            var moveResponse = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+            connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(moveResponse.game()));
+            connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification(String.format("%s moved from %s to %s!", moveResponse.username(), moveResponse.from(), moveResponse.to())));
+            if (moveResponse.inCheck() != null) {
+                connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s is in check!", moveResponse.inCheck())));
             }
         } catch (Exceptions.NotAuthorizedException e) {
             sendError(ctx, "not authorized");
