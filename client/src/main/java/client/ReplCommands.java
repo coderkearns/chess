@@ -190,7 +190,6 @@ public class ReplCommands {
             ctx.context.gameID = gameID;
             ctx.facade.connectGame(ctx.context.authToken, gameID);
 
-            // TODO this will be handled by websocket later
             ctx.context.chessGame = new ChessGame();
             ctx.context.playerColor = Objects.equals(args[1], "WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 

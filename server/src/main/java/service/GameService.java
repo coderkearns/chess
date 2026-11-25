@@ -86,7 +86,8 @@ public class GameService {
         gameDAO.setGame(new GameData(game.gameID(), newWhiteUsername, newBlackUsername, game.gameName(), game.game()));
     }
 
-    public MakeMoveResponse makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public MakeMoveResponse makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException,
+            InvalidMoveException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
@@ -94,7 +95,9 @@ public class GameService {
             throw new Exceptions.NotFoundException();
         }
 
-        var currentPlayer = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? gameData.whiteUsername() : gameData.blackUsername();
+        var currentPlayer = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE
+                ? gameData.whiteUsername()
+                : gameData.blackUsername();
         if (!Objects.equals(username, currentPlayer)) {
             throw new Exceptions.NotAuthorizedException();
         }
@@ -104,13 +107,22 @@ public class GameService {
 
         String inCheck = null;
         if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
-            inCheck = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? gameData.whiteUsername() : gameData.blackUsername();
+            inCheck = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE
+                    ? gameData.whiteUsername()
+                    : gameData.blackUsername();
         }
 
-        return new MakeMoveResponse(gameData.game(), username, move.getStartPosition().toCoordinates(), move.getEndPosition().toCoordinates(), inCheck);
+        return new MakeMoveResponse(
+                gameData.game(),
+                username,
+                move.getStartPosition().toCoordinates(),
+                move.getEndPosition().toCoordinates(),
+                inCheck
+        );
     }
 
-    public String resign(String authToken, int gameID) throws DataAccessException, Exceptions.NotFoundException, Exceptions.BadRequestException, Exceptions.NotAuthorizedException {
+    public String resign(String authToken, int gameID) throws DataAccessException,
+            Exceptions.NotFoundException, Exceptions.BadRequestException, Exceptions.NotAuthorizedException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
@@ -125,11 +137,14 @@ public class GameService {
         }
 
         // observer resigned
-        if (!Objects.equals(username, gameData.whiteUsername()) && !Objects.equals(username, gameData.blackUsername())) {
+        if (!Objects.equals(username, gameData.whiteUsername())
+                && !Objects.equals(username, gameData.blackUsername())) {
             throw new Exceptions.NotAuthorizedException();
         }
 
-        var color = Objects.equals(username, gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        var color = Objects.equals(username, gameData.whiteUsername())
+                ? ChessGame.TeamColor.WHITE
+                : ChessGame.TeamColor.BLACK;
         gameData.game().resign(color);
         gameDAO.setGame(gameData);
 
@@ -146,7 +161,8 @@ public class GameService {
         }
 
         // observer left
-        if (!Objects.equals(username, gameData.whiteUsername()) && !Objects.equals(username, gameData.blackUsername())) {
+        if (!Objects.equals(username, gameData.whiteUsername())
+                && !Objects.equals(username, gameData.blackUsername())) {
             return username;
         }
 
@@ -158,7 +174,13 @@ public class GameService {
             blackUsername = null;
         }
 
-        gameDAO.setGame(new GameData(gameData.gameID(), whiteUsername, blackUsername, gameData.gameName(), gameData.game()));
+        gameDAO.setGame(new GameData(
+                gameData.gameID(),
+                whiteUsername,
+                blackUsername,
+                gameData.gameName(),
+                gameData.game()
+        ));
 
         return username;
     }
