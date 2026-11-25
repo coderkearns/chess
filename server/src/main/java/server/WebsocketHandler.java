@@ -83,6 +83,14 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void onLeave(UserGameCommand command, WsMessageContext ctx) throws IOException {
         connections.remove(command.getGameID(), ctx.session);
+
+        try {
+            authService.verify(command.getAuthToken());
+            var leftUsername = gameService.leave(command.getAuthToken(), command.getGameID());
+            connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s left!", leftUsername)));
+        } catch (DataAccessException e) {
+            sendError(ctx, "server error getting game data");
+        }
     }
 
     private void onResign(UserGameCommand command, WsMessageContext ctx) throws IOException {

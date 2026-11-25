@@ -128,6 +128,33 @@ public class GameService {
         return username;
     }
 
+    public String leave(String authToken, int gameID) throws DataAccessException {
+        var username = authDAO.getUsername(authToken);
+        var gameData = gameDAO.find(gameID);
+
+        // leave a nonexistent game
+        if (gameData == null) {
+            throw new Exceptions.NotFoundException();
+        }
+
+        // observer left
+        if (!Objects.equals(username, gameData.whiteUsername()) && !Objects.equals(username, gameData.blackUsername())) {
+            return username;
+        }
+
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+        if (Objects.equals(username, gameData.whiteUsername())) {
+            whiteUsername = null;
+        } else {
+            blackUsername = null;
+        }
+
+        gameDAO.setGame(new GameData(gameData.gameID(), whiteUsername, blackUsername, gameData.gameName(), gameData.game()));
+
+        return username;
+    }
+
     public ChessGame getCurrentState(String authToken, int gameID) throws DataAccessException {
         var gameData = gameDAO.find(gameID);
 
