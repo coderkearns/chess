@@ -59,6 +59,10 @@ public class ChessPosition {
         return new ChessPosition(row, column);
     }
 
+    public String toCoordinates() {
+        return String.format("%s%s", "abcdefgh".charAt(col - 1), row);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

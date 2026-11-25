@@ -45,6 +45,16 @@ public class ChessPositionTests extends EqualsTestingUtility<ChessPosition> {
 
         assertThrows(IndexOutOfBoundsException.class, () -> ChessPosition.fromCoordinates("i2"));
         assertThrows(IndexOutOfBoundsException.class, () -> ChessPosition.fromCoordinates("a9"));
+    }
 
+    @Test
+    @DisplayName("Convert to Coordinates")
+    public void testToCoordinates() {
+        for (var test : Map.of(
+                new ChessPosition(2, 1), "a2",
+                new ChessPosition(3, 8), "h3"
+        ).entrySet()) {
+            assertEquals(test.getValue(), test.getKey().toCoordinates());
+        }
     }
 }
