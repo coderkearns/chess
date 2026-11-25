@@ -86,14 +86,20 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void onResign(UserGameCommand command, WsMessageContext ctx) throws IOException {
+        /*
+        Server marks the game as over (no more moves can be made). Game is updated in the database.
+Server sends a Notification message to all clients in that game informing them that the root client resigned. This applies to both players and observers.
+*/
         try {
             authService.verify(command.getAuthToken());
-            var gameState = gameService.resign(command.getAuthToken(), command.getGameID());
-            connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
+            var resignedUser = gameService.resign(command.getAuthToken(), command.getGameID());
+            connections.broadcast(command.getGameID(), null, new ServerMessage.Notification(String.format("%s resigned!", resignedUser)));
+        } catch (Exceptions.BadRequestException e) {
+            sendError(ctx, "bad request");
         } catch (Exceptions.NotAuthorizedException e) {
-            broadcastError(command.getGameID(), "not authorized");
+            sendError(ctx, "not authorized");
         } catch (DataAccessException e) {
-            broadcastError(command.getGameID(), "server error getting game data");
+            sendError(ctx, "server error getting game data");
         }
     }
 

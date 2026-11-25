@@ -102,23 +102,30 @@ public class GameService {
         return gameData.game();
     }
 
-    public ChessGame resign(String authToken, int gameID) throws DataAccessException {
+    public String resign(String authToken, int gameID) throws DataAccessException, Exceptions.NotFoundException, Exceptions.BadRequestException, Exceptions.NotAuthorizedException {
         var username = authDAO.getUsername(authToken);
         var gameData = gameDAO.find(gameID);
 
+        // resign a nonexistent game
         if (gameData == null) {
             throw new Exceptions.NotFoundException();
         }
 
+        // double resign
         if (gameData.game().isGameOver()) {
             throw new Exceptions.BadRequestException();
+        }
+
+        // observer resigned
+        if (!Objects.equals(username, gameData.whiteUsername()) && !Objects.equals(username, gameData.blackUsername())) {
+            throw new Exceptions.NotAuthorizedException();
         }
 
         var color = Objects.equals(username, gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
         gameData.game().resign(color);
         gameDAO.setGame(gameData);
 
-        return gameData.game();
+        return username;
     }
 
     public ChessGame getCurrentState(String authToken, int gameID) throws DataAccessException {
