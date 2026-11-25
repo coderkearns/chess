@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
@@ -99,7 +100,7 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void onMakeMove(UserGameCommand.MakeMove command, WsMessageContext ctx) throws IOException {
         try {
             authService.verify(command.getAuthToken());
-            var gameState = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+            ChessGame gameState = gameService.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
             connections.broadcast(command.getGameID(), null, new ServerMessage.LoadGame(gameState));
             connections.broadcast(command.getGameID(), ctx.session, new ServerMessage.Notification("Move made!"));
             if (gameState.isInCheck(gameState.getTeamTurn())) {
@@ -108,7 +109,7 @@ public class WebsocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (Exceptions.NotAuthorizedException e) {
             broadcastError(command.getGameID(), "not authorized");
         } catch (InvalidMoveException e) {
-            broadcastError(command.getGameID(), e.getMessage());
+            sendError(ctx, "invalid move");
         } catch (DataAccessException e) {
             broadcastError(command.getGameID(), "server error getting game data");
         }
